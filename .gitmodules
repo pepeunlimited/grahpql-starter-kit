@@ -1,0 +1,3 @@
+[submodule "src/rpc/protobuf"]
+	path = src/rpc/protobuf
+	url = https://github.com/pepeunlimited/protobuf.git
