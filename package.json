@@ -1,19 +1,22 @@
 {
   "name": "graphql-starter-kit",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
-    "build": "tsc"
+    "rebuild": "rm -rf dist/ && tsc && node --require dotenv/config dist/server",
+    "build": "rm -rf dist/ && tsc",
+    "start": "node --require dotenv/config dist/server"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "PepeUnlimited Oy",
+  "license": "MIT",
   "devDependencies": {
+    "@types/lodash": "^4.14.149",
+    "dotenv": "^8.2.0",
     "typescript": "^3.7.3"
   },
   "dependencies": {
+    "apollo-server": "^2.9.14",
+    "graphql": "^14.5.8",
     "ts-proto": "^1.5.0",
-    "ts-rpc-client": "0.1.0"
+    "ts-rpc-client": "0.2.3"
   }
 }

@@ -1,5 +1,7 @@
 import { Empty } from './google/protobuf/empty';
 import { Reader, Writer } from 'protobufjs/minimal';
+import DataLoader from 'dataloader';
+import hash from 'object-hash';
 import * as Long from 'long';
 
 
@@ -101,79 +103,93 @@ const baseVerifyPasswordParams: object = {
 const baseVerifyPasswordResponse: object = {
 };
 
-export interface UserService {
+export interface UserService<Context extends DataLoaders> {
 
-  CreateUser(request: CreateUserParams): Promise<User>;
+  CreateUser(ctx: Context, request: CreateUserParams): Promise<User>;
 
-  UpdatePassword(request: UpdatePasswordParams): Promise<UpdatePasswordResponse>;
+  UpdatePassword(ctx: Context, request: UpdatePasswordParams): Promise<UpdatePasswordResponse>;
 
-  ForgotPassword(request: ForgotPasswordParams): Promise<Empty>;
+  ForgotPassword(ctx: Context, request: ForgotPasswordParams): Promise<Empty>;
 
-  VerifyResetPassword(request: VerifyPasswordParams): Promise<VerifyPasswordResponse>;
+  VerifyResetPassword(ctx: Context, request: VerifyPasswordParams): Promise<VerifyPasswordResponse>;
 
-  ResetPassword(request: ResetPasswordParams): Promise<ResetPasswordResponse>;
+  ResetPassword(ctx: Context, request: ResetPasswordParams): Promise<ResetPasswordResponse>;
 
-  GetUser(request: GetUserParams): Promise<User>;
+  GetUser(ctx: Context, request: GetUserParams): Promise<User>;
 
-  VerifySignIn(request: VerifySignInParams): Promise<User>;
+  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<User>;
 
 }
 
-export class UserServiceClientImpl implements UserService {
+export class UserServiceClientImpl<Context extends DataLoaders> implements UserService<Context> {
 
-  private readonly rpc: Rpc;
+  private readonly rpc: Rpc<Context>;
 
-  constructor(rpc: Rpc) {
+  constructor(rpc: Rpc<Context>) {
     this.rpc = rpc;
   }
 
-  CreateUser(request: CreateUserParams): Promise<User> {
+  CreateUser(ctx: Context, request: CreateUserParams): Promise<User> {
     const data = CreateUserParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "CreateUser", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "CreateUser", data);
     return promise.then(data => User.decode(new Reader(data)));
   }
 
-  UpdatePassword(request: UpdatePasswordParams): Promise<UpdatePasswordResponse> {
+  UpdatePassword(ctx: Context, request: UpdatePasswordParams): Promise<UpdatePasswordResponse> {
     const data = UpdatePasswordParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "UpdatePassword", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "UpdatePassword", data);
     return promise.then(data => UpdatePasswordResponse.decode(new Reader(data)));
   }
 
-  ForgotPassword(request: ForgotPasswordParams): Promise<Empty> {
+  ForgotPassword(ctx: Context, request: ForgotPasswordParams): Promise<Empty> {
     const data = ForgotPasswordParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "ForgotPassword", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "ForgotPassword", data);
     return promise.then(data => Empty.decode(new Reader(data)));
   }
 
-  VerifyResetPassword(request: VerifyPasswordParams): Promise<VerifyPasswordResponse> {
+  VerifyResetPassword(ctx: Context, request: VerifyPasswordParams): Promise<VerifyPasswordResponse> {
     const data = VerifyPasswordParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "VerifyResetPassword", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "VerifyResetPassword", data);
     return promise.then(data => VerifyPasswordResponse.decode(new Reader(data)));
   }
 
-  ResetPassword(request: ResetPasswordParams): Promise<ResetPasswordResponse> {
+  ResetPassword(ctx: Context, request: ResetPasswordParams): Promise<ResetPasswordResponse> {
     const data = ResetPasswordParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "ResetPassword", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "ResetPassword", data);
     return promise.then(data => ResetPasswordResponse.decode(new Reader(data)));
   }
 
-  GetUser(request: GetUserParams): Promise<User> {
-    const data = GetUserParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "GetUser", data);
-    return promise.then(data => User.decode(new Reader(data)));
+  GetUser(ctx: Context, request: GetUserParams): Promise<User> {
+    const dl = ctx.getDataLoader("pepeunlimited.users.UserService.GetUser", () => {
+      return new DataLoader<GetUserParams, User>((requests) => {
+        const responses = requests.map(async request => {
+          const data = GetUserParams.encode(request).finish();
+          const response = await this.rpc.request(ctx, "pepeunlimited.users.UserService", "GetUser", data);
+          return User.decode(new Reader(response));
+        })
+        return Promise.all(responses);
+      }, { cacheKeyFn: hash });
+    });
+    return dl.load(request);
   }
 
-  VerifySignIn(request: VerifySignInParams): Promise<User> {
+  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<User> {
     const data = VerifySignInParams.encode(request).finish();
-    const promise = this.rpc.request("pepeunlimited.users.UserService", "VerifySignIn", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "VerifySignIn", data);
     return promise.then(data => User.decode(new Reader(data)));
   }
 
 }
 
-interface Rpc {
+interface Rpc<Context> {
 
-  request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  request(ctx: Context, service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+
+}
+
+interface DataLoaders {
+
+  getDataLoader<T>(identifier: string, cstrFn: () => T): T;
 
 }
 

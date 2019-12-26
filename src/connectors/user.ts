@@ -1,0 +1,6 @@
+class UserConnector {
+  
+  constructor() {
+
+  }
+}
