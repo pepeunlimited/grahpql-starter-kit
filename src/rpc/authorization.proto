@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package pepeunlimited.authorization;
+option go_package = "rpc";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+// https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/wrappers.proto
+
+service AuthorizationService {
+
+    rpc SignIn(SignInParams)     returns (SignInResponse);
+
+    // TODO: implement the refresh token...
+    rpc Refresh(RefreshParams)   returns (RefreshResponse);
+
+    // verify the token
+    rpc Verify(VerifyParams)     returns (VerifyResponse);
+}
+
+message SignInParams {
+    string username         = 1; //required
+    string password         = 2; //required
+}
+
+message SignInResponse {
+    string token           = 1;
+    string refresh_token   = 2;
+}
+
+message RefreshParams {
+    string refresh_token   = 1; // required
+}
+
+message RefreshResponse {
+    string token           = 1;
+}
+
+message VerifyParams {
+    string token           = 1;
+}
+
+message VerifyResponse {
+    string username        = 1;
+    string email           = 2;
+    int64  user_id         = 3;
+    repeated string roles  = 4;
+
+}

@@ -28,7 +28,7 @@ export const resolvers: IResolvers = {
       const token = ctx.token as String;
       const userService = context.models.user as UserService<Context>;
       if (isNullOrUndefined(token)) {
-        throw new AuthenticationError("JWT-token is required")
+        throw new AuthenticationError("Authorizaton is required")
       }
       try {
         const user = await userService.GetUser(ctx, {});
