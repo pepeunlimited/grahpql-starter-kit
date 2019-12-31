@@ -3,6 +3,7 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import DataLoader from 'dataloader';
 import hash from 'object-hash';
 import * as Long from 'long';
+import { StringValue } from './google/protobuf/wrappers';
 
 
 export interface VerifySignInParams {
@@ -28,7 +29,8 @@ export interface UpdatePasswordResponse {
 }
 
 export interface ForgotPasswordParams {
-  username: string;
+  username: string | undefined;
+  email: string | undefined;
   language: string;
 }
 
@@ -77,7 +79,8 @@ const baseUpdatePasswordResponse: object = {
 };
 
 const baseForgotPasswordParams: object = {
-  username: "",
+  username: undefined,
+  email: undefined,
   language: "",
 };
 
@@ -434,8 +437,13 @@ export const UpdatePasswordResponse = {
 
 export const ForgotPasswordParams = {
   encode(message: ForgotPasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.username);
-    writer.uint32(18).string(message.language);
+    if (message.username !== undefined && message.username !== undefined) {
+      StringValue.encode({ value: message.username! }, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.email !== undefined && message.email !== undefined) {
+      StringValue.encode({ value: message.email! }, writer.uint32(18).fork()).ldelim();
+    }
+    writer.uint32(26).string(message.language);
     return writer;
   },
   decode(reader: Reader, length?: number): ForgotPasswordParams {
@@ -445,9 +453,12 @@ export const ForgotPasswordParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.username = reader.string();
+          message.username = StringValue.decode(reader, reader.uint32()).value;
           break;
         case 2:
+          message.email = StringValue.decode(reader, reader.uint32()).value;
+          break;
+        case 3:
           message.language = reader.string();
           break;
         default:
@@ -462,6 +473,9 @@ export const ForgotPasswordParams = {
     if (object.username) {
       message.username = String(object.username);
     }
+    if (object.email) {
+      message.email = String(object.email);
+    }
     if (object.language) {
       message.language = String(object.language);
     }
@@ -472,6 +486,9 @@ export const ForgotPasswordParams = {
     if (object.username) {
       message.username = object.username;
     }
+    if (object.email) {
+      message.email = object.email;
+    }
     if (object.language) {
       message.language = object.language;
     }
@@ -479,7 +496,8 @@ export const ForgotPasswordParams = {
   },
   toJSON(message: ForgotPasswordParams): unknown {
     const obj: any = {};
-    obj.username = message.username || "";
+    obj.username = message.username || undefined;
+    obj.email = message.email || undefined;
     obj.language = message.language || "";
     return obj;
   },

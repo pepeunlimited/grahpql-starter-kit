@@ -20,8 +20,7 @@ const server = new ApolloServer({
     return { models: { user, authorization }, ctx: ctx };
   },
   introspection: environment.apollo.introspection,
-  playground:  environment.apollo.playground,
-  tracing: true,
+  playground:  environment.apollo.playground
 });
 server.listen().then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
