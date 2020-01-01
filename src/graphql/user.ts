@@ -4,7 +4,7 @@ import { isTwirpError, TwirpError } from 'ts-rpc-client';
 import { ApolloError, UserInputError, AuthenticationError, ForbiddenError } from "apollo-server";
 import { isNullOrUndefined } from "util";
 import { Context } from "ts-rpc-client";
-import { isJwtError } from "../error/authorization";
+import { isAccessRefreshError } from "../error/authorization";
 import { isUserError, isTicketError } from "../error/user";
 import {isValidationError} from "../error/validation";
 
@@ -45,7 +45,7 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isJwtError(error);
+          isAccessRefreshError(error);
           isUserError(error);
           isValidationError(error);
         }
@@ -82,7 +82,7 @@ export const resolvers: IResolvers = {
       } catch (error) {
         if (isTwirpError(error)) {
           isUserError(error);
-          isJwtError(error);
+          isAccessRefreshError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -99,7 +99,7 @@ export const resolvers: IResolvers = {
       } catch (error) {
         if (isTwirpError(error)) {
           isUserError(error);
-          isJwtError(error);
+          isAccessRefreshError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error

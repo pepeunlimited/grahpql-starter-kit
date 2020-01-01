@@ -5,16 +5,17 @@ import { isNullOrUndefined } from "util";
 import { AuthorizationService } from "../rpc/authorization";
 import { UserService, User } from "../rpc/user";
 import { isUserError } from "../error/user";
-import { isJwtError } from "../error/authorization";
+import { isAccessRefreshError } from "../error/authorization";
 import {isValidationError} from "../error/validation";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
     signIn(username: String!, password: String!): AuthPayload!
+    refreshAccessToken(refreshToken: String!): AuthPayload!
   }
   type AuthPayload {
-    refreshToken: String!
-    accessToken: String
+    refreshToken: String
+    accessToken: String!
     user: User
   }
 `;
@@ -37,7 +38,24 @@ export const resolvers: IResolvers = {
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
-    }
+    },
+    refreshAccessToken: async (_source, { refreshToken }, context): Promise<AuthPayload> => {
+      const ctx = context.ctx as Context;
+      const authorizationService = context.models.authorization as AuthorizationService<Context>;
+      try {
+        const auth = await authorizationService.RefreshAccessToken(ctx, { refreshToken });
+        ctx.accessToken = `Bearer ${auth.accessToken}`;
+        return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isAccessRefreshError((error));
+          isValidationError(error);
+          isUserError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    },
   },
   AuthPayload: {
     user: async (_source, { username, password }, context): Promise<User> => {
@@ -48,7 +66,7 @@ export const resolvers: IResolvers = {
         return user
       } catch (error) {
         if (isTwirpError(error)) {
-          isJwtError(error);
+          isAccessRefreshError(error);
           isUserError(error);
           isValidationError(error);
         }
