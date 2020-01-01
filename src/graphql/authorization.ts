@@ -4,8 +4,9 @@ import { isTwirpError, Context } from "ts-rpc-client";
 import { isNullOrUndefined } from "util";
 import { AuthorizationService } from "../rpc/authorization";
 import { UserService, User } from "../rpc/user";
-import { isCryptoError, isUserError } from "../error/user";
+import { isUserError } from "../error/user";
 import { isJwtError } from "../error/authorization";
+import {isValidationError} from "../error/validation";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
@@ -30,7 +31,8 @@ export const resolvers: IResolvers = {
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
-          isCryptoError(error);
+          isValidationError(error);
+          isUserError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -48,6 +50,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isJwtError(error);
           isUserError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

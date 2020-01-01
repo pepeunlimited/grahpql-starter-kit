@@ -2,12 +2,6 @@ import { TwirpError } from "ts-rpc-client";
 
 import { UserInputError, ForbiddenError, ApolloError, AuthenticationError } from "apollo-server";
 
-export function isCryptoError(error: TwirpError) {
-  if (error.reason == 'invalid_credentials') {
-    throw new UserInputError(error.reason)
-  }
-}
-
 export function isUserError(error: TwirpError) {
   if (error.reason == 'user_is_banned' || error.reason == 'user_is_locked') {
     throw new ForbiddenError(error.reason)

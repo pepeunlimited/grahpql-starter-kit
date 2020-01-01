@@ -5,7 +5,8 @@ import { ApolloError, UserInputError, AuthenticationError, ForbiddenError } from
 import { isNullOrUndefined } from "util";
 import { Context } from "ts-rpc-client";
 import { isJwtError } from "../error/authorization";
-import { isUserError, isCryptoError, isTicketError } from "../error/user";
+import { isUserError, isTicketError } from "../error/user";
+import {isValidationError} from "../error/validation";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -39,9 +40,6 @@ export const resolvers: IResolvers = {
       const ctx = context.ctx as Context;
       const token = ctx.accessToken as String;
       const userService = context.models.user as UserService<Context>;
-      if (isNullOrUndefined(token)) {
-        throw new AuthenticationError("Authorizaton is required")
-      }
       try {
         const user = await userService.GetUser(ctx, {});
         return user;
@@ -49,7 +47,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isJwtError(error);
           isUserError(error);
-          isCryptoError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -69,7 +67,7 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          throw new UserInputError(error.reason);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -85,7 +83,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isUserError(error);
           isJwtError(error);
-          isCryptoError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -102,7 +100,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isUserError(error);
           isJwtError(error);
-          isCryptoError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -118,6 +116,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isUserError(error);
           isTicketError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -133,6 +132,7 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isUserError(error);
           isTicketError(error);
+          isValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
