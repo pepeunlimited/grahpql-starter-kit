@@ -1,6 +1,6 @@
 import { User } from "../rpc/user";
 
 export interface AuthPayload {
-  token: string
+  accessToken: string
   refreshToken: string
 }

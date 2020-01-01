@@ -8,14 +8,14 @@ import { AuthorizationServiceClientImpl } from './rpc/authorization';
 const server = new ApolloServer({ 
   schema,
   context: ({ req }) => {
-    const ctx = new Context()
+    const ctx = new Context();
     const token = req.headers.authorization as string;
-    ctx.token = token;
+    ctx.accessToken = token;
 
     const rpc = new Rpc("api.dev.pepeunlimited.com", 80);
     
     const authorization = new AuthorizationServiceClientImpl<Context>(rpc);
-    const user = new UserServiceClientImpl<Context>(rpc)
+    const user = new UserServiceClientImpl<Context>(rpc);
     
     return { models: { user, authorization }, ctx: ctx };
   },

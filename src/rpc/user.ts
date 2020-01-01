@@ -42,7 +42,7 @@ export interface User {
 }
 
 export interface ResetPasswordParams {
-  token: string;
+  ticketToken: string;
   password: string;
 }
 
@@ -50,7 +50,7 @@ export interface ResetPasswordResponse {
 }
 
 export interface VerifyPasswordParams {
-  token: string;
+  ticketToken: string;
 }
 
 export interface VerifyPasswordResponse {
@@ -92,7 +92,7 @@ const baseUser: object = {
 };
 
 const baseResetPasswordParams: object = {
-  token: "",
+  ticketToken: "",
   password: "",
 };
 
@@ -100,7 +100,7 @@ const baseResetPasswordResponse: object = {
 };
 
 const baseVerifyPasswordParams: object = {
-  token: "",
+  ticketToken: "",
 };
 
 const baseVerifyPasswordResponse: object = {
@@ -593,7 +593,7 @@ export const User = {
 
 export const ResetPasswordParams = {
   encode(message: ResetPasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    writer.uint32(10).string(message.ticketToken);
     writer.uint32(18).string(message.password);
     return writer;
   },
@@ -604,7 +604,7 @@ export const ResetPasswordParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.token = reader.string();
+          message.ticketToken = reader.string();
           break;
         case 2:
           message.password = reader.string();
@@ -618,8 +618,8 @@ export const ResetPasswordParams = {
   },
   fromJSON(object: any): ResetPasswordParams {
     const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.token) {
-      message.token = String(object.token);
+    if (object.ticketToken) {
+      message.ticketToken = String(object.ticketToken);
     }
     if (object.password) {
       message.password = String(object.password);
@@ -628,8 +628,8 @@ export const ResetPasswordParams = {
   },
   fromPartial(object: DeepPartial<ResetPasswordParams>): ResetPasswordParams {
     const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.token) {
-      message.token = object.token;
+    if (object.ticketToken) {
+      message.ticketToken = object.ticketToken;
     }
     if (object.password) {
       message.password = object.password;
@@ -638,7 +638,7 @@ export const ResetPasswordParams = {
   },
   toJSON(message: ResetPasswordParams): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
+    obj.ticketToken = message.ticketToken || "";
     obj.password = message.password || "";
     return obj;
   },
@@ -677,7 +677,7 @@ export const ResetPasswordResponse = {
 
 export const VerifyPasswordParams = {
   encode(message: VerifyPasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    writer.uint32(10).string(message.ticketToken);
     return writer;
   },
   decode(reader: Reader, length?: number): VerifyPasswordParams {
@@ -687,7 +687,7 @@ export const VerifyPasswordParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.token = reader.string();
+          message.ticketToken = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -698,21 +698,21 @@ export const VerifyPasswordParams = {
   },
   fromJSON(object: any): VerifyPasswordParams {
     const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.token) {
-      message.token = String(object.token);
+    if (object.ticketToken) {
+      message.ticketToken = String(object.ticketToken);
     }
     return message;
   },
   fromPartial(object: DeepPartial<VerifyPasswordParams>): VerifyPasswordParams {
     const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.token) {
-      message.token = object.token;
+    if (object.ticketToken) {
+      message.ticketToken = object.ticketToken;
     }
     return message;
   },
   toJSON(message: VerifyPasswordParams): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
+    obj.ticketToken = message.ticketToken || "";
     return obj;
   },
 };

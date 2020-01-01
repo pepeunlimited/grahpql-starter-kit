@@ -12,8 +12,8 @@ export const typeDef: ITypedef = `
     signIn(username: String!, password: String!): AuthPayload!
   }
   type AuthPayload {
-    token: String!
-    refershToken: String
+    refreshToken: String!
+    accessToken: String
     user: User
   }
 `;
@@ -22,41 +22,35 @@ export const resolvers: IResolvers = {
   Query: {},
   Mutation: {
     signIn: async (_source, { username, password }, context): Promise<AuthPayload> => {
-      if (isNullOrUndefined(username)) {
-        throw new UserInputError("username is required", username as any)
-      }
-      if (isNullOrUndefined(password)) {
-        throw new UserInputError("password is required", username as any)
-      }
       const ctx = context.ctx as Context;
-      const authorizationService = context.models.authorization as AuthorizationService<Context>
+      const authorizationService = context.models.authorization as AuthorizationService<Context>;
       try {
-        const auth = await authorizationService.SignIn(ctx, { username: username, password: password })
-        ctx.token = `Bearer ${auth.token}`
-        return { refreshToken: auth.refreshToken, token: auth.token};
+        const auth = await authorizationService.SignIn(ctx, { username: username, password: password });
+        ctx.accessToken = `Bearer ${auth.accessToken}`;
+        return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
-          isCryptoError(error)
+          isCryptoError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     }
   },
   AuthPayload: {
     user: async (_source, { username, password }, context): Promise<User> => {
       const ctx = context.ctx as Context;
-      const userService = context.models.user as UserService<Context>
+      const userService = context.models.user as UserService<Context>;
       try {
-        const user = await userService.GetUser(ctx, {})
+        const user = await userService.GetUser(ctx, {});
         return user
       } catch (error) {
         if (isTwirpError(error)) {
-          isJwtError(error)
-          isUserError(error)
+          isJwtError(error);
+          isUserError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     }
   }

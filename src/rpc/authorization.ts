@@ -8,23 +8,24 @@ export interface SignInParams {
 }
 
 export interface SignInResponse {
-  token: string;
+  accessToken: string;
   refreshToken: string;
 }
 
-export interface RefreshParams {
+export interface RefreshAccessTokenParams {
   refreshToken: string;
 }
 
-export interface RefreshResponse {
-  token: string;
+export interface RefreshAccessTokenResponse {
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface VerifyParams {
-  token: string;
+export interface VerifyAccessTokenParams {
+  accessToken: string;
 }
 
-export interface VerifyResponse {
+export interface VerifyAccessTokenResponse {
   username: string;
   email: string;
   userId: number;
@@ -37,23 +38,24 @@ const baseSignInParams: object = {
 };
 
 const baseSignInResponse: object = {
-  token: "",
+  accessToken: "",
   refreshToken: "",
 };
 
-const baseRefreshParams: object = {
+const baseRefreshAccessTokenParams: object = {
   refreshToken: "",
 };
 
-const baseRefreshResponse: object = {
-  token: "",
+const baseRefreshAccessTokenResponse: object = {
+  accessToken: "",
+  refreshToken: "",
 };
 
-const baseVerifyParams: object = {
-  token: "",
+const baseVerifyAccessTokenParams: object = {
+  accessToken: "",
 };
 
-const baseVerifyResponse: object = {
+const baseVerifyAccessTokenResponse: object = {
   username: "",
   email: "",
   userId: 0,
@@ -64,9 +66,9 @@ export interface AuthorizationService<Context extends DataLoaders> {
 
   SignIn(ctx: Context, request: SignInParams): Promise<SignInResponse>;
 
-  Refresh(ctx: Context, request: RefreshParams): Promise<RefreshResponse>;
+  RefreshAccessToken(ctx: Context, request: RefreshAccessTokenParams): Promise<RefreshAccessTokenResponse>;
 
-  Verify(ctx: Context, request: VerifyParams): Promise<VerifyResponse>;
+  VerifyAccessToken(ctx: Context, request: VerifyAccessTokenParams): Promise<VerifyAccessTokenResponse>;
 
 }
 
@@ -84,16 +86,16 @@ export class AuthorizationServiceClientImpl<Context extends DataLoaders> impleme
     return promise.then(data => SignInResponse.decode(new Reader(data)));
   }
 
-  Refresh(ctx: Context, request: RefreshParams): Promise<RefreshResponse> {
-    const data = RefreshParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "Refresh", data);
-    return promise.then(data => RefreshResponse.decode(new Reader(data)));
+  RefreshAccessToken(ctx: Context, request: RefreshAccessTokenParams): Promise<RefreshAccessTokenResponse> {
+    const data = RefreshAccessTokenParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "RefreshAccessToken", data);
+    return promise.then(data => RefreshAccessTokenResponse.decode(new Reader(data)));
   }
 
-  Verify(ctx: Context, request: VerifyParams): Promise<VerifyResponse> {
-    const data = VerifyParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "Verify", data);
-    return promise.then(data => VerifyResponse.decode(new Reader(data)));
+  VerifyAccessToken(ctx: Context, request: VerifyAccessTokenParams): Promise<VerifyAccessTokenResponse> {
+    const data = VerifyAccessTokenParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "VerifyAccessToken", data);
+    return promise.then(data => VerifyAccessTokenResponse.decode(new Reader(data)));
   }
 
 }
@@ -172,7 +174,7 @@ export const SignInParams = {
 
 export const SignInResponse = {
   encode(message: SignInResponse, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+    writer.uint32(10).string(message.accessToken);
     writer.uint32(18).string(message.refreshToken);
     return writer;
   },
@@ -183,7 +185,7 @@ export const SignInResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.token = reader.string();
+          message.accessToken = reader.string();
           break;
         case 2:
           message.refreshToken = reader.string();
@@ -197,8 +199,8 @@ export const SignInResponse = {
   },
   fromJSON(object: any): SignInResponse {
     const message = Object.create(baseSignInResponse) as SignInResponse;
-    if (object.token) {
-      message.token = String(object.token);
+    if (object.accessToken) {
+      message.accessToken = String(object.accessToken);
     }
     if (object.refreshToken) {
       message.refreshToken = String(object.refreshToken);
@@ -207,8 +209,8 @@ export const SignInResponse = {
   },
   fromPartial(object: DeepPartial<SignInResponse>): SignInResponse {
     const message = Object.create(baseSignInResponse) as SignInResponse;
-    if (object.token) {
-      message.token = object.token;
+    if (object.accessToken) {
+      message.accessToken = object.accessToken;
     }
     if (object.refreshToken) {
       message.refreshToken = object.refreshToken;
@@ -217,20 +219,20 @@ export const SignInResponse = {
   },
   toJSON(message: SignInResponse): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
+    obj.accessToken = message.accessToken || "";
     obj.refreshToken = message.refreshToken || "";
     return obj;
   },
 };
 
-export const RefreshParams = {
-  encode(message: RefreshParams, writer: Writer = Writer.create()): Writer {
+export const RefreshAccessTokenParams = {
+  encode(message: RefreshAccessTokenParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(10).string(message.refreshToken);
     return writer;
   },
-  decode(reader: Reader, length?: number): RefreshParams {
+  decode(reader: Reader, length?: number): RefreshAccessTokenParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseRefreshParams) as RefreshParams;
+    const message = Object.create(baseRefreshAccessTokenParams) as RefreshAccessTokenParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -244,40 +246,44 @@ export const RefreshParams = {
     }
     return message;
   },
-  fromJSON(object: any): RefreshParams {
-    const message = Object.create(baseRefreshParams) as RefreshParams;
+  fromJSON(object: any): RefreshAccessTokenParams {
+    const message = Object.create(baseRefreshAccessTokenParams) as RefreshAccessTokenParams;
     if (object.refreshToken) {
       message.refreshToken = String(object.refreshToken);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<RefreshParams>): RefreshParams {
-    const message = Object.create(baseRefreshParams) as RefreshParams;
+  fromPartial(object: DeepPartial<RefreshAccessTokenParams>): RefreshAccessTokenParams {
+    const message = Object.create(baseRefreshAccessTokenParams) as RefreshAccessTokenParams;
     if (object.refreshToken) {
       message.refreshToken = object.refreshToken;
     }
     return message;
   },
-  toJSON(message: RefreshParams): unknown {
+  toJSON(message: RefreshAccessTokenParams): unknown {
     const obj: any = {};
     obj.refreshToken = message.refreshToken || "";
     return obj;
   },
 };
 
-export const RefreshResponse = {
-  encode(message: RefreshResponse, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+export const RefreshAccessTokenResponse = {
+  encode(message: RefreshAccessTokenResponse, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.accessToken);
+    writer.uint32(18).string(message.refreshToken);
     return writer;
   },
-  decode(reader: Reader, length?: number): RefreshResponse {
+  decode(reader: Reader, length?: number): RefreshAccessTokenResponse {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseRefreshResponse) as RefreshResponse;
+    const message = Object.create(baseRefreshAccessTokenResponse) as RefreshAccessTokenResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.token = reader.string();
+          message.accessToken = reader.string();
+          break;
+        case 2:
+          message.refreshToken = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -286,40 +292,47 @@ export const RefreshResponse = {
     }
     return message;
   },
-  fromJSON(object: any): RefreshResponse {
-    const message = Object.create(baseRefreshResponse) as RefreshResponse;
-    if (object.token) {
-      message.token = String(object.token);
+  fromJSON(object: any): RefreshAccessTokenResponse {
+    const message = Object.create(baseRefreshAccessTokenResponse) as RefreshAccessTokenResponse;
+    if (object.accessToken) {
+      message.accessToken = String(object.accessToken);
+    }
+    if (object.refreshToken) {
+      message.refreshToken = String(object.refreshToken);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<RefreshResponse>): RefreshResponse {
-    const message = Object.create(baseRefreshResponse) as RefreshResponse;
-    if (object.token) {
-      message.token = object.token;
+  fromPartial(object: DeepPartial<RefreshAccessTokenResponse>): RefreshAccessTokenResponse {
+    const message = Object.create(baseRefreshAccessTokenResponse) as RefreshAccessTokenResponse;
+    if (object.accessToken) {
+      message.accessToken = object.accessToken;
+    }
+    if (object.refreshToken) {
+      message.refreshToken = object.refreshToken;
     }
     return message;
   },
-  toJSON(message: RefreshResponse): unknown {
+  toJSON(message: RefreshAccessTokenResponse): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
+    obj.accessToken = message.accessToken || "";
+    obj.refreshToken = message.refreshToken || "";
     return obj;
   },
 };
 
-export const VerifyParams = {
-  encode(message: VerifyParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.token);
+export const VerifyAccessTokenParams = {
+  encode(message: VerifyAccessTokenParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(10).string(message.accessToken);
     return writer;
   },
-  decode(reader: Reader, length?: number): VerifyParams {
+  decode(reader: Reader, length?: number): VerifyAccessTokenParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseVerifyParams) as VerifyParams;
+    const message = Object.create(baseVerifyAccessTokenParams) as VerifyAccessTokenParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.token = reader.string();
+          message.accessToken = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -328,29 +341,29 @@ export const VerifyParams = {
     }
     return message;
   },
-  fromJSON(object: any): VerifyParams {
-    const message = Object.create(baseVerifyParams) as VerifyParams;
-    if (object.token) {
-      message.token = String(object.token);
+  fromJSON(object: any): VerifyAccessTokenParams {
+    const message = Object.create(baseVerifyAccessTokenParams) as VerifyAccessTokenParams;
+    if (object.accessToken) {
+      message.accessToken = String(object.accessToken);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<VerifyParams>): VerifyParams {
-    const message = Object.create(baseVerifyParams) as VerifyParams;
-    if (object.token) {
-      message.token = object.token;
+  fromPartial(object: DeepPartial<VerifyAccessTokenParams>): VerifyAccessTokenParams {
+    const message = Object.create(baseVerifyAccessTokenParams) as VerifyAccessTokenParams;
+    if (object.accessToken) {
+      message.accessToken = object.accessToken;
     }
     return message;
   },
-  toJSON(message: VerifyParams): unknown {
+  toJSON(message: VerifyAccessTokenParams): unknown {
     const obj: any = {};
-    obj.token = message.token || "";
+    obj.accessToken = message.accessToken || "";
     return obj;
   },
 };
 
-export const VerifyResponse = {
-  encode(message: VerifyResponse, writer: Writer = Writer.create()): Writer {
+export const VerifyAccessTokenResponse = {
+  encode(message: VerifyAccessTokenResponse, writer: Writer = Writer.create()): Writer {
     writer.uint32(10).string(message.username);
     writer.uint32(18).string(message.email);
     writer.uint32(24).int64(message.userId);
@@ -359,9 +372,9 @@ export const VerifyResponse = {
     }
     return writer;
   },
-  decode(reader: Reader, length?: number): VerifyResponse {
+  decode(reader: Reader, length?: number): VerifyAccessTokenResponse {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseVerifyResponse) as VerifyResponse;
+    const message = Object.create(baseVerifyAccessTokenResponse) as VerifyAccessTokenResponse;
     message.roles = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -385,8 +398,8 @@ export const VerifyResponse = {
     }
     return message;
   },
-  fromJSON(object: any): VerifyResponse {
-    const message = Object.create(baseVerifyResponse) as VerifyResponse;
+  fromJSON(object: any): VerifyAccessTokenResponse {
+    const message = Object.create(baseVerifyAccessTokenResponse) as VerifyAccessTokenResponse;
     message.roles = [];
     if (object.username) {
       message.username = String(object.username);
@@ -404,8 +417,8 @@ export const VerifyResponse = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<VerifyResponse>): VerifyResponse {
-    const message = Object.create(baseVerifyResponse) as VerifyResponse;
+  fromPartial(object: DeepPartial<VerifyAccessTokenResponse>): VerifyAccessTokenResponse {
+    const message = Object.create(baseVerifyAccessTokenResponse) as VerifyAccessTokenResponse;
     message.roles = [];
     if (object.username) {
       message.username = object.username;
@@ -423,7 +436,7 @@ export const VerifyResponse = {
     }
     return message;
   },
-  toJSON(message: VerifyResponse): unknown {
+  toJSON(message: VerifyAccessTokenResponse): unknown {
     const obj: any = {};
     obj.username = message.username || "";
     obj.email = message.email || "";

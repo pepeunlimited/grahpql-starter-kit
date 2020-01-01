@@ -22,7 +22,9 @@ export const typeDef: ITypedef = `
     # create forgot password ticket for the user via username or email
     forgotPassword(username: String, email: String): Boolean!
     # verify the password reset token
-    verifyPasswordReset(token: String!): Boolean!
+    verifyPasswordReset(ticketToken: String!): Boolean!
+    # reset password with the token
+    resetPassword(ticketToken: String!, password: String!): Boolean!
   }
   type User {
     id: ID!
@@ -35,7 +37,7 @@ export const resolvers: IResolvers = {
   Query: {
     user: async (_, { }, context): Promise<User> => {
       const ctx = context.ctx as Context;
-      const token = ctx.token as String;
+      const token = ctx.accessToken as String;
       const userService = context.models.user as UserService<Context>;
       if (isNullOrUndefined(token)) {
         throw new AuthenticationError("Authorizaton is required")
@@ -45,12 +47,12 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isJwtError(error)
-          isUserError(error)
-          isCryptoError(error)
+          isJwtError(error);
+          isUserError(error);
+          isCryptoError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     }
   },
@@ -67,26 +69,26 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          throw new UserInputError(error.reason)
+          throw new UserInputError(error.reason);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
     updatePassword: async (_source, { currentPassword, newPassword }, context): Promise<Boolean> => {
       const ctx = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
       try {
-        await userService.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword })
+        await userService.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword });
         return true
       } catch (error) {
         if (isTwirpError(error)) {
-          isUserError(error)
-          isJwtError(error)
-          isCryptoError(error)
+          isUserError(error);
+          isJwtError(error);
+          isCryptoError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
     forgotPassword: async (_source, { username, email }, context): Promise<Boolean> => {
@@ -94,31 +96,46 @@ export const resolvers: IResolvers = {
       const userService = context.models.user as UserService<Context>;
       try {
         const language = "en" as string
-        await userService.ForgotPassword(ctx, { username, email, language })
+        await userService.ForgotPassword(ctx, { username, email, language });
         return true
       } catch (error) {
         if (isTwirpError(error)) {
-          isUserError(error)
-          isJwtError(error)
-          isCryptoError(error)
+          isUserError(error);
+          isJwtError(error);
+          isCryptoError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-    verifyPasswordReset: async (_source, { token }, context): Promise<Boolean> => {
+    verifyPasswordReset: async (_source, { ticketToken }, context): Promise<Boolean> => {
       const ctx = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
       try {
-        await userService.VerifyResetPassword(ctx, { token });
+        await userService.VerifyResetPassword(ctx, { ticketToken });
         return true
       } catch (error) {
         if (isTwirpError(error)) {
-          isUserError(error)
-          isTicketError(error)
+          isUserError(error);
+          isTicketError(error);
         }
-        console.log(error) // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR")
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    },
+    resetPassword: async (_source, { ticketToken, password }, context): Promise<Boolean> => {
+      const ctx = context.ctx as Context;
+      const userService = context.models.user as UserService<Context>;
+      try {
+        await userService.ResetPassword(ctx, { ticketToken, password });
+        return true
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isUserError(error);
+          isTicketError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
   },
