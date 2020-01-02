@@ -1,7 +1,6 @@
 import { ITypedef, IResolvers, UserInputError, ApolloError } from "apollo-server";
 import { AuthPayload } from "../models/authorization";
 import { isTwirpError, Context } from "ts-rpc-client";
-import { isNullOrUndefined } from "util";
 import { AuthorizationService } from "../rpc/authorization";
 import { UserService, User } from "../rpc/user";
 import { isUserError } from "../error/user";

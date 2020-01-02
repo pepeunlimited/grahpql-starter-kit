@@ -1,6 +1,6 @@
 import { environment } from './enviroment';
 import { ApolloServer } from 'apollo-server'
-import schema from './graphql';
+import schema from './resolvers';
 import { Rpc, Context } from 'ts-rpc-client';
 import { UserServiceClientImpl } from './rpc/user';
 import { AuthorizationServiceClientImpl } from './rpc/authorization';
