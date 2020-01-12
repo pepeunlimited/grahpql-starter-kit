@@ -4,6 +4,7 @@ import schema from './resolvers';
 import { Rpc, Context } from 'ts-rpc-client';
 import { UserServiceClientImpl } from './rpc/user';
 import { AuthorizationServiceClientImpl } from './rpc/authorization';
+import {SpacesServiceClientImpl} from "./rpc/spaces";
 
 const server = new ApolloServer({ 
   schema,
@@ -12,12 +13,17 @@ const server = new ApolloServer({
     const token = req.headers.authorization as string;
     ctx.accessToken = token;
 
-    const rpc = new Rpc("api.dev.pepeunlimited.com", 80);
+    // TODO: move to the .env-file
+    const host: string = "api.dev.pepeunlimited.com";
+    const port: number = 80;
+
+    const rpc =           new Rpc(host, port);
     
     const authorization = new AuthorizationServiceClientImpl<Context>(rpc);
-    const user = new UserServiceClientImpl<Context>(rpc);
-    
-    return { models: { user, authorization }, ctx: ctx };
+    const user =          new UserServiceClientImpl<Context>(rpc);
+    const spaces =        new SpacesServiceClientImpl<Context>(rpc);
+
+    return { models: { user, authorization, spaces }, ctx: ctx };
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground

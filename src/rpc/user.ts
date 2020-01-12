@@ -3,8 +3,19 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import DataLoader from 'dataloader';
 import hash from 'object-hash';
 import * as Long from 'long';
-import { StringValue } from './google/protobuf/wrappers';
+import { StringValue, Int64Value } from './google/protobuf/wrappers';
 
+
+export interface SetProfilePictureParams {
+  profilePictureId: number;
+}
+
+export interface DeleteProfilePictureParams {
+}
+
+export interface ProfilePicture {
+  profilePictureId: number;
+}
 
 export interface VerifySignInParams {
   username: string;
@@ -39,6 +50,7 @@ export interface User {
   username: string;
   email: string;
   roles: string[];
+  profilePictureId: number | undefined;
 }
 
 export interface ResetPasswordParams {
@@ -55,6 +67,17 @@ export interface VerifyPasswordParams {
 
 export interface VerifyPasswordResponse {
 }
+
+const baseSetProfilePictureParams: object = {
+  profilePictureId: 0,
+};
+
+const baseDeleteProfilePictureParams: object = {
+};
+
+const baseProfilePicture: object = {
+  profilePictureId: 0,
+};
 
 const baseVerifySignInParams: object = {
   username: "",
@@ -89,6 +112,7 @@ const baseUser: object = {
   username: "",
   email: "",
   roles: "",
+  profilePictureId: undefined,
 };
 
 const baseResetPasswordParams: object = {
@@ -121,6 +145,10 @@ export interface UserService<Context extends DataLoaders> {
   GetUser(ctx: Context, request: GetUserParams): Promise<User>;
 
   VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<User>;
+
+  SetProfilePicture(ctx: Context, request: SetProfilePictureParams): Promise<ProfilePicture>;
+
+  DeleteProfilePicture(ctx: Context, request: DeleteProfilePictureParams): Promise<ProfilePicture>;
 
 }
 
@@ -182,6 +210,18 @@ export class UserServiceClientImpl<Context extends DataLoaders> implements UserS
     return promise.then(data => User.decode(new Reader(data)));
   }
 
+  SetProfilePicture(ctx: Context, request: SetProfilePictureParams): Promise<ProfilePicture> {
+    const data = SetProfilePictureParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "SetProfilePicture", data);
+    return promise.then(data => ProfilePicture.decode(new Reader(data)));
+  }
+
+  DeleteProfilePicture(ctx: Context, request: DeleteProfilePictureParams): Promise<ProfilePicture> {
+    const data = DeleteProfilePictureParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "DeleteProfilePicture", data);
+    return promise.then(data => ProfilePicture.decode(new Reader(data)));
+  }
+
 }
 
 interface Rpc<Context> {
@@ -202,6 +242,121 @@ function longToNumber(long: Long) {
   }
   return long.toNumber();
 }
+
+export const SetProfilePictureParams = {
+  encode(message: SetProfilePictureParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.profilePictureId);
+    return writer;
+  },
+  decode(reader: Reader, length?: number): SetProfilePictureParams {
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = Object.create(baseSetProfilePictureParams) as SetProfilePictureParams;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profilePictureId = longToNumber(reader.int64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): SetProfilePictureParams {
+    const message = Object.create(baseSetProfilePictureParams) as SetProfilePictureParams;
+    if (object.profilePictureId) {
+      message.profilePictureId = Number(object.profilePictureId);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<SetProfilePictureParams>): SetProfilePictureParams {
+    const message = Object.create(baseSetProfilePictureParams) as SetProfilePictureParams;
+    if (object.profilePictureId) {
+      message.profilePictureId = object.profilePictureId;
+    }
+    return message;
+  },
+  toJSON(message: SetProfilePictureParams): unknown {
+    const obj: any = {};
+    obj.profilePictureId = message.profilePictureId || 0;
+    return obj;
+  },
+};
+
+export const DeleteProfilePictureParams = {
+  encode(message: DeleteProfilePictureParams, writer: Writer = Writer.create()): Writer {
+    return writer;
+  },
+  decode(reader: Reader, length?: number): DeleteProfilePictureParams {
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): DeleteProfilePictureParams {
+    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
+    return message;
+  },
+  fromPartial(object: DeepPartial<DeleteProfilePictureParams>): DeleteProfilePictureParams {
+    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
+    return message;
+  },
+  toJSON(message: DeleteProfilePictureParams): unknown {
+    const obj: any = {};
+    return obj;
+  },
+};
+
+export const ProfilePicture = {
+  encode(message: ProfilePicture, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.profilePictureId);
+    return writer;
+  },
+  decode(reader: Reader, length?: number): ProfilePicture {
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = Object.create(baseProfilePicture) as ProfilePicture;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profilePictureId = longToNumber(reader.int64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): ProfilePicture {
+    const message = Object.create(baseProfilePicture) as ProfilePicture;
+    if (object.profilePictureId) {
+      message.profilePictureId = Number(object.profilePictureId);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<ProfilePicture>): ProfilePicture {
+    const message = Object.create(baseProfilePicture) as ProfilePicture;
+    if (object.profilePictureId) {
+      message.profilePictureId = object.profilePictureId;
+    }
+    return message;
+  },
+  toJSON(message: ProfilePicture): unknown {
+    const obj: any = {};
+    obj.profilePictureId = message.profilePictureId || 0;
+    return obj;
+  },
+};
 
 export const VerifySignInParams = {
   encode(message: VerifySignInParams, writer: Writer = Writer.create()): Writer {
@@ -511,6 +666,9 @@ export const User = {
     for (const v of message.roles) {
       writer.uint32(34).string(v!);
     }
+    if (message.profilePictureId !== undefined && message.profilePictureId !== undefined) {
+      Int64Value.encode({ value: message.profilePictureId! }, writer.uint32(42).fork()).ldelim();
+    }
     return writer;
   },
   decode(reader: Reader, length?: number): User {
@@ -531,6 +689,9 @@ export const User = {
           break;
         case 4:
           message.roles.push(reader.string());
+          break;
+        case 5:
+          message.profilePictureId = Int64Value.decode(reader, reader.uint32()).value;
           break;
         default:
           reader.skipType(tag & 7);
@@ -556,6 +717,9 @@ export const User = {
         message.roles.push(String(e));
       }
     }
+    if (object.profilePictureId) {
+      message.profilePictureId = Number(object.profilePictureId);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<User>): User {
@@ -575,6 +739,9 @@ export const User = {
         message.roles.push(e);
       }
     }
+    if (object.profilePictureId) {
+      message.profilePictureId = object.profilePictureId;
+    }
     return message;
   },
   toJSON(message: User): unknown {
@@ -587,6 +754,7 @@ export const User = {
     } else {
       obj.roles = [];
     }
+    obj.profilePictureId = message.profilePictureId || undefined;
     return obj;
   },
 };

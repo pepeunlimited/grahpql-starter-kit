@@ -1,12 +1,13 @@
 import { IResolvers, ITypedef } from "graphql-tools";
 import { User, UserService } from '../rpc/user';
-import { isTwirpError, TwirpError } from 'ts-rpc-client';
-import { ApolloError, UserInputError, AuthenticationError, ForbiddenError } from "apollo-server";
-import { isNullOrUndefined } from "util";
+import { isTwirpError } from 'ts-rpc-client';
+import {ApolloError, UserInputError} from "apollo-server";
 import { Context } from "ts-rpc-client";
 import { isAccessRefreshError } from "../error/authorization";
 import { isUserError, isTicketError } from "../error/user";
-import {isValidationError} from "../error/validation";
+import { isValidationError } from "../error/validation";
+import {File, SpacesService} from '../rpc/spaces';
+import {isSpacesError} from "../error/spaces";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -26,12 +27,15 @@ export const typeDef: ITypedef = `
     verifyPasswordReset(ticketToken: String!): Boolean!
     # reset password with the token
     resetPassword(ticketToken: String!, password: String!): Boolean!
+    # use to set and update the profile picture 
+    setProfilePicture(fileID: ID!): Boolean!
   }
   type User {
     id: ID!
     username: String!
     email: String!
     roles: [String]!
+    profilePicture: File
   }
 `;
 export const resolvers: IResolvers = {
@@ -42,6 +46,7 @@ export const resolvers: IResolvers = {
       const userService = context.models.user as UserService<Context>;
       try {
         const user = await userService.GetUser(ctx, {});
+        context.user = user;
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
@@ -67,6 +72,26 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
+          isValidationError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    },
+    setProfilePicture: async (_source, { fileID }, context): Promise<Boolean> => {
+      const ctx = context.ctx as Context;
+      const userService = context.models.user as UserService<Context>;
+      const spacesService = context.models.spaces as SpacesService<Context>;
+      try {
+        const resp0 = await spacesService.GetFile(ctx, { fileId: fileID, filename: undefined});
+        const resp1 = await userService.GetUser(ctx, {});
+        const resp2 = await userService.SetProfilePicture(ctx, { profilePictureId: fileID });
+        return true
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isSpacesError(error);
+          isUserError(error);
+          isAccessRefreshError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -139,5 +164,27 @@ export const resolvers: IResolvers = {
       }
     },
   },
-  User: {}
+  User: {
+    profilePicture: async (_source, {  }, context): Promise<File|null> => {
+      const ctx = context.ctx as Context;
+      const spacesService = context.models.spaces as SpacesService<Context>;
+      try {
+        const user = context.user as User; // NOTE: not sure, is this proper way..
+        if (user.profilePictureId == 0) {
+          return null;
+        }
+        const file = await spacesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined });
+        return file
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isSpacesError(error)
+          isAccessRefreshError(error);
+          isUserError(error);
+          isValidationError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    }
+  }
 };

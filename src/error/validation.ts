@@ -1,5 +1,5 @@
-import {TwirpError} from "ts-rpc-client";
-import {AuthenticationError, UserInputError} from "apollo-server";
+import { TwirpError } from "ts-rpc-client";
+import { UserInputError } from "apollo-server";
 
 export function isValidationError(error: TwirpError) {
     if (error.code == 'invalid_argument') {

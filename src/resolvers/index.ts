@@ -11,6 +11,12 @@ import {
   resolvers as authorizationResolvers
 } from './authorization';
 
+import {
+  typeDef as Spaces,
+  resolvers as spacesResolvers
+} from './spaces';
+
+
 const Query: ITypedef = `
   type Query {
     _empty: String
@@ -19,9 +25,10 @@ const Query: ITypedef = `
     _empty: String
   }
 `;
-const resolvers: IResolvers =  {}
+
+const resolvers: IResolvers =  {};
 
 export default makeExecutableSchema({
-  typeDefs: [Query, User, Authorizaton],
-  resolvers: merge(resolvers, userResolvers, authorizationResolvers)
+  typeDefs: [Query, User, Authorizaton, Spaces],
+  resolvers: merge(resolvers, userResolvers, authorizationResolvers, spacesResolvers)
 });

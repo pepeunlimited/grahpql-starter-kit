@@ -1,4 +1,4 @@
-import { ITypedef, IResolvers, UserInputError, ApolloError } from "apollo-server";
+import { ITypedef, IResolvers, ApolloError } from "apollo-server";
 import { AuthPayload } from "../models/authorization";
 import { isTwirpError, Context } from "ts-rpc-client";
 import { AuthorizationService } from "../rpc/authorization";
@@ -57,7 +57,7 @@ export const resolvers: IResolvers = {
     },
   },
   AuthPayload: {
-    user: async (_source, { username, password }, context): Promise<User> => {
+    user: async (_source, {}, context): Promise<User> => {
       const ctx = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
       try {
