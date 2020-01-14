@@ -3,46 +3,21 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import DataLoader from 'dataloader';
 import hash from 'object-hash';
 import * as Long from 'long';
-import { StringValue, Int64Value } from './google/protobuf/wrappers';
+import { Int64Value } from './google/protobuf/wrappers';
 
 
 export interface SetProfilePictureParams {
   profilePictureId: number;
 }
 
-export interface DeleteProfilePictureParams {
-}
-
 export interface ProfilePicture {
   profilePictureId: number;
-}
-
-export interface VerifySignInParams {
-  username: string;
-  password: string;
 }
 
 export interface CreateUserParams {
   username: string;
   password: string;
   email: string;
-}
-
-export interface GetUserParams {
-}
-
-export interface UpdatePasswordParams {
-  currentPassword: string;
-  newPassword: string;
-}
-
-export interface UpdatePasswordResponse {
-}
-
-export interface ForgotPasswordParams {
-  username: string | undefined;
-  email: string | undefined;
-  language: string;
 }
 
 export interface User {
@@ -53,58 +28,18 @@ export interface User {
   profilePictureId: number | undefined;
 }
 
-export interface ResetPasswordParams {
-  ticketToken: string;
-  password: string;
-}
-
-export interface ResetPasswordResponse {
-}
-
-export interface VerifyPasswordParams {
-  ticketToken: string;
-}
-
-export interface VerifyPasswordResponse {
-}
-
 const baseSetProfilePictureParams: object = {
   profilePictureId: 0,
-};
-
-const baseDeleteProfilePictureParams: object = {
 };
 
 const baseProfilePicture: object = {
   profilePictureId: 0,
 };
 
-const baseVerifySignInParams: object = {
-  username: "",
-  password: "",
-};
-
 const baseCreateUserParams: object = {
   username: "",
   password: "",
   email: "",
-};
-
-const baseGetUserParams: object = {
-};
-
-const baseUpdatePasswordParams: object = {
-  currentPassword: "",
-  newPassword: "",
-};
-
-const baseUpdatePasswordResponse: object = {
-};
-
-const baseForgotPasswordParams: object = {
-  username: undefined,
-  email: undefined,
-  language: "",
 };
 
 const baseUser: object = {
@@ -115,40 +50,15 @@ const baseUser: object = {
   profilePictureId: undefined,
 };
 
-const baseResetPasswordParams: object = {
-  ticketToken: "",
-  password: "",
-};
-
-const baseResetPasswordResponse: object = {
-};
-
-const baseVerifyPasswordParams: object = {
-  ticketToken: "",
-};
-
-const baseVerifyPasswordResponse: object = {
-};
-
 export interface UserService<Context extends DataLoaders> {
 
   CreateUser(ctx: Context, request: CreateUserParams): Promise<User>;
 
-  UpdatePassword(ctx: Context, request: UpdatePasswordParams): Promise<UpdatePasswordResponse>;
-
-  ForgotPassword(ctx: Context, request: ForgotPasswordParams): Promise<Empty>;
-
-  VerifyResetPassword(ctx: Context, request: VerifyPasswordParams): Promise<VerifyPasswordResponse>;
-
-  ResetPassword(ctx: Context, request: ResetPasswordParams): Promise<ResetPasswordResponse>;
-
-  GetUser(ctx: Context, request: GetUserParams): Promise<User>;
-
-  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<User>;
+  GetUser(ctx: Context, request: Empty): Promise<User>;
 
   SetProfilePicture(ctx: Context, request: SetProfilePictureParams): Promise<ProfilePicture>;
 
-  DeleteProfilePicture(ctx: Context, request: DeleteProfilePictureParams): Promise<ProfilePicture>;
+  DeleteProfilePicture(ctx: Context, request: Empty): Promise<ProfilePicture>;
 
 }
 
@@ -166,35 +76,11 @@ export class UserServiceClientImpl<Context extends DataLoaders> implements UserS
     return promise.then(data => User.decode(new Reader(data)));
   }
 
-  UpdatePassword(ctx: Context, request: UpdatePasswordParams): Promise<UpdatePasswordResponse> {
-    const data = UpdatePasswordParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "UpdatePassword", data);
-    return promise.then(data => UpdatePasswordResponse.decode(new Reader(data)));
-  }
-
-  ForgotPassword(ctx: Context, request: ForgotPasswordParams): Promise<Empty> {
-    const data = ForgotPasswordParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "ForgotPassword", data);
-    return promise.then(data => Empty.decode(new Reader(data)));
-  }
-
-  VerifyResetPassword(ctx: Context, request: VerifyPasswordParams): Promise<VerifyPasswordResponse> {
-    const data = VerifyPasswordParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "VerifyResetPassword", data);
-    return promise.then(data => VerifyPasswordResponse.decode(new Reader(data)));
-  }
-
-  ResetPassword(ctx: Context, request: ResetPasswordParams): Promise<ResetPasswordResponse> {
-    const data = ResetPasswordParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "ResetPassword", data);
-    return promise.then(data => ResetPasswordResponse.decode(new Reader(data)));
-  }
-
-  GetUser(ctx: Context, request: GetUserParams): Promise<User> {
+  GetUser(ctx: Context, request: Empty): Promise<User> {
     const dl = ctx.getDataLoader("pepeunlimited.users.UserService.GetUser", () => {
-      return new DataLoader<GetUserParams, User>((requests) => {
+      return new DataLoader<Empty, User>((requests) => {
         const responses = requests.map(async request => {
-          const data = GetUserParams.encode(request).finish();
+          const data = Empty.encode(request).finish();
           const response = await this.rpc.request(ctx, "pepeunlimited.users.UserService", "GetUser", data);
           return User.decode(new Reader(response));
         })
@@ -204,20 +90,14 @@ export class UserServiceClientImpl<Context extends DataLoaders> implements UserS
     return dl.load(request);
   }
 
-  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<User> {
-    const data = VerifySignInParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "VerifySignIn", data);
-    return promise.then(data => User.decode(new Reader(data)));
-  }
-
   SetProfilePicture(ctx: Context, request: SetProfilePictureParams): Promise<ProfilePicture> {
     const data = SetProfilePictureParams.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "SetProfilePicture", data);
     return promise.then(data => ProfilePicture.decode(new Reader(data)));
   }
 
-  DeleteProfilePicture(ctx: Context, request: DeleteProfilePictureParams): Promise<ProfilePicture> {
-    const data = DeleteProfilePictureParams.encode(request).finish();
+  DeleteProfilePicture(ctx: Context, request: Empty): Promise<ProfilePicture> {
+    const data = Empty.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.users.UserService", "DeleteProfilePicture", data);
     return promise.then(data => ProfilePicture.decode(new Reader(data)));
   }
@@ -285,37 +165,6 @@ export const SetProfilePictureParams = {
   },
 };
 
-export const DeleteProfilePictureParams = {
-  encode(message: DeleteProfilePictureParams, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): DeleteProfilePictureParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): DeleteProfilePictureParams {
-    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
-    return message;
-  },
-  fromPartial(object: DeepPartial<DeleteProfilePictureParams>): DeleteProfilePictureParams {
-    const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
-    return message;
-  },
-  toJSON(message: DeleteProfilePictureParams): unknown {
-    const obj: any = {};
-    return obj;
-  },
-};
-
 export const ProfilePicture = {
   encode(message: ProfilePicture, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).int64(message.profilePictureId);
@@ -354,59 +203,6 @@ export const ProfilePicture = {
   toJSON(message: ProfilePicture): unknown {
     const obj: any = {};
     obj.profilePictureId = message.profilePictureId || 0;
-    return obj;
-  },
-};
-
-export const VerifySignInParams = {
-  encode(message: VerifySignInParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.username);
-    writer.uint32(18).string(message.password);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): VerifySignInParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseVerifySignInParams) as VerifySignInParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.username = reader.string();
-          break;
-        case 2:
-          message.password = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): VerifySignInParams {
-    const message = Object.create(baseVerifySignInParams) as VerifySignInParams;
-    if (object.username) {
-      message.username = String(object.username);
-    }
-    if (object.password) {
-      message.password = String(object.password);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<VerifySignInParams>): VerifySignInParams {
-    const message = Object.create(baseVerifySignInParams) as VerifySignInParams;
-    if (object.username) {
-      message.username = object.username;
-    }
-    if (object.password) {
-      message.password = object.password;
-    }
-    return message;
-  },
-  toJSON(message: VerifySignInParams): unknown {
-    const obj: any = {};
-    obj.username = message.username || "";
-    obj.password = message.password || "";
     return obj;
   },
 };
@@ -471,189 +267,6 @@ export const CreateUserParams = {
     obj.username = message.username || "";
     obj.password = message.password || "";
     obj.email = message.email || "";
-    return obj;
-  },
-};
-
-export const GetUserParams = {
-  encode(message: GetUserParams, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): GetUserParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseGetUserParams) as GetUserParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): GetUserParams {
-    const message = Object.create(baseGetUserParams) as GetUserParams;
-    return message;
-  },
-  fromPartial(object: DeepPartial<GetUserParams>): GetUserParams {
-    const message = Object.create(baseGetUserParams) as GetUserParams;
-    return message;
-  },
-  toJSON(message: GetUserParams): unknown {
-    const obj: any = {};
-    return obj;
-  },
-};
-
-export const UpdatePasswordParams = {
-  encode(message: UpdatePasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.currentPassword);
-    writer.uint32(18).string(message.newPassword);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): UpdatePasswordParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseUpdatePasswordParams) as UpdatePasswordParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.currentPassword = reader.string();
-          break;
-        case 2:
-          message.newPassword = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): UpdatePasswordParams {
-    const message = Object.create(baseUpdatePasswordParams) as UpdatePasswordParams;
-    if (object.currentPassword) {
-      message.currentPassword = String(object.currentPassword);
-    }
-    if (object.newPassword) {
-      message.newPassword = String(object.newPassword);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<UpdatePasswordParams>): UpdatePasswordParams {
-    const message = Object.create(baseUpdatePasswordParams) as UpdatePasswordParams;
-    if (object.currentPassword) {
-      message.currentPassword = object.currentPassword;
-    }
-    if (object.newPassword) {
-      message.newPassword = object.newPassword;
-    }
-    return message;
-  },
-  toJSON(message: UpdatePasswordParams): unknown {
-    const obj: any = {};
-    obj.currentPassword = message.currentPassword || "";
-    obj.newPassword = message.newPassword || "";
-    return obj;
-  },
-};
-
-export const UpdatePasswordResponse = {
-  encode(message: UpdatePasswordResponse, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): UpdatePasswordResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseUpdatePasswordResponse) as UpdatePasswordResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): UpdatePasswordResponse {
-    const message = Object.create(baseUpdatePasswordResponse) as UpdatePasswordResponse;
-    return message;
-  },
-  fromPartial(object: DeepPartial<UpdatePasswordResponse>): UpdatePasswordResponse {
-    const message = Object.create(baseUpdatePasswordResponse) as UpdatePasswordResponse;
-    return message;
-  },
-  toJSON(message: UpdatePasswordResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-};
-
-export const ForgotPasswordParams = {
-  encode(message: ForgotPasswordParams, writer: Writer = Writer.create()): Writer {
-    if (message.username !== undefined && message.username !== undefined) {
-      StringValue.encode({ value: message.username! }, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.email !== undefined && message.email !== undefined) {
-      StringValue.encode({ value: message.email! }, writer.uint32(18).fork()).ldelim();
-    }
-    writer.uint32(26).string(message.language);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): ForgotPasswordParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseForgotPasswordParams) as ForgotPasswordParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.username = StringValue.decode(reader, reader.uint32()).value;
-          break;
-        case 2:
-          message.email = StringValue.decode(reader, reader.uint32()).value;
-          break;
-        case 3:
-          message.language = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): ForgotPasswordParams {
-    const message = Object.create(baseForgotPasswordParams) as ForgotPasswordParams;
-    if (object.username) {
-      message.username = String(object.username);
-    }
-    if (object.email) {
-      message.email = String(object.email);
-    }
-    if (object.language) {
-      message.language = String(object.language);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<ForgotPasswordParams>): ForgotPasswordParams {
-    const message = Object.create(baseForgotPasswordParams) as ForgotPasswordParams;
-    if (object.username) {
-      message.username = object.username;
-    }
-    if (object.email) {
-      message.email = object.email;
-    }
-    if (object.language) {
-      message.language = object.language;
-    }
-    return message;
-  },
-  toJSON(message: ForgotPasswordParams): unknown {
-    const obj: any = {};
-    obj.username = message.username || undefined;
-    obj.email = message.email || undefined;
-    obj.language = message.language || "";
     return obj;
   },
 };
@@ -755,163 +368,6 @@ export const User = {
       obj.roles = [];
     }
     obj.profilePictureId = message.profilePictureId || undefined;
-    return obj;
-  },
-};
-
-export const ResetPasswordParams = {
-  encode(message: ResetPasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.ticketToken);
-    writer.uint32(18).string(message.password);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): ResetPasswordParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.ticketToken = reader.string();
-          break;
-        case 2:
-          message.password = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): ResetPasswordParams {
-    const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.ticketToken) {
-      message.ticketToken = String(object.ticketToken);
-    }
-    if (object.password) {
-      message.password = String(object.password);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<ResetPasswordParams>): ResetPasswordParams {
-    const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.ticketToken) {
-      message.ticketToken = object.ticketToken;
-    }
-    if (object.password) {
-      message.password = object.password;
-    }
-    return message;
-  },
-  toJSON(message: ResetPasswordParams): unknown {
-    const obj: any = {};
-    obj.ticketToken = message.ticketToken || "";
-    obj.password = message.password || "";
-    return obj;
-  },
-};
-
-export const ResetPasswordResponse = {
-  encode(message: ResetPasswordResponse, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): ResetPasswordResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseResetPasswordResponse) as ResetPasswordResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): ResetPasswordResponse {
-    const message = Object.create(baseResetPasswordResponse) as ResetPasswordResponse;
-    return message;
-  },
-  fromPartial(object: DeepPartial<ResetPasswordResponse>): ResetPasswordResponse {
-    const message = Object.create(baseResetPasswordResponse) as ResetPasswordResponse;
-    return message;
-  },
-  toJSON(message: ResetPasswordResponse): unknown {
-    const obj: any = {};
-    return obj;
-  },
-};
-
-export const VerifyPasswordParams = {
-  encode(message: VerifyPasswordParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.ticketToken);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): VerifyPasswordParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.ticketToken = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): VerifyPasswordParams {
-    const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.ticketToken) {
-      message.ticketToken = String(object.ticketToken);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<VerifyPasswordParams>): VerifyPasswordParams {
-    const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.ticketToken) {
-      message.ticketToken = object.ticketToken;
-    }
-    return message;
-  },
-  toJSON(message: VerifyPasswordParams): unknown {
-    const obj: any = {};
-    obj.ticketToken = message.ticketToken || "";
-    return obj;
-  },
-};
-
-export const VerifyPasswordResponse = {
-  encode(message: VerifyPasswordResponse, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): VerifyPasswordResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseVerifyPasswordResponse) as VerifyPasswordResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): VerifyPasswordResponse {
-    const message = Object.create(baseVerifyPasswordResponse) as VerifyPasswordResponse;
-    return message;
-  },
-  fromPartial(object: DeepPartial<VerifyPasswordResponse>): VerifyPasswordResponse {
-    const message = Object.create(baseVerifyPasswordResponse) as VerifyPasswordResponse;
-    return message;
-  },
-  toJSON(message: VerifyPasswordResponse): unknown {
-    const obj: any = {};
     return obj;
   },
 };
