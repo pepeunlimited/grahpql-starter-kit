@@ -62,7 +62,7 @@ const baseVerifyAccessTokenResponse: object = {
   roles: "",
 };
 
-export interface AuthorizationService<Context extends DataLoaders> {
+export interface AuthenticationService<Context extends DataLoaders> {
 
   SignIn(ctx: Context, request: SignInParams): Promise<SignInResponse>;
 
@@ -72,7 +72,7 @@ export interface AuthorizationService<Context extends DataLoaders> {
 
 }
 
-export class AuthorizationServiceClientImpl<Context extends DataLoaders> implements AuthorizationService<Context> {
+export class AuthenticationServiceClientImpl<Context extends DataLoaders> implements AuthenticationService<Context> {
 
   private readonly rpc: Rpc<Context>;
 
@@ -82,19 +82,19 @@ export class AuthorizationServiceClientImpl<Context extends DataLoaders> impleme
 
   SignIn(ctx: Context, request: SignInParams): Promise<SignInResponse> {
     const data = SignInParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "SignIn", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.authentication.AuthenticationService", "SignIn", data);
     return promise.then(data => SignInResponse.decode(new Reader(data)));
   }
 
   RefreshAccessToken(ctx: Context, request: RefreshAccessTokenParams): Promise<RefreshAccessTokenResponse> {
     const data = RefreshAccessTokenParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "RefreshAccessToken", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.authentication.AuthenticationService", "RefreshAccessToken", data);
     return promise.then(data => RefreshAccessTokenResponse.decode(new Reader(data)));
   }
 
   VerifyAccessToken(ctx: Context, request: VerifyAccessTokenParams): Promise<VerifyAccessTokenResponse> {
     const data = VerifyAccessTokenParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.authorization.AuthorizationService", "VerifyAccessToken", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.authentication.AuthenticationService", "VerifyAccessToken", data);
     return promise.then(data => VerifyAccessTokenResponse.decode(new Reader(data)));
   }
 

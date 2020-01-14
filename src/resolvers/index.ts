@@ -7,9 +7,9 @@ import {
 } from './user';
 
 import {
-  typeDef as Authorizaton,
-  resolvers as authorizationResolvers
-} from './authorization';
+  typeDef as Authentication,
+  resolvers as authenticationResolvers
+} from './authentication';
 
 import {
   typeDef as Spaces,
@@ -33,6 +33,6 @@ const Query: ITypedef = `
 const resolvers: IResolvers =  {};
 
 export default makeExecutableSchema({
-  typeDefs: [Query, User, Authorizaton, Spaces, Credentials],
-  resolvers: merge(resolvers, userResolvers, authorizationResolvers, spacesResolvers, credentialsResolvers)
+  typeDefs: [Query, User, Authentication, Spaces, Credentials],
+  resolvers: merge(resolvers, userResolvers, authenticationResolvers, spacesResolvers, credentialsResolvers)
 });

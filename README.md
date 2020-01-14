@@ -5,7 +5,7 @@ The microservices which we had implemented, GraphQL glues them together providin
 ## Microservices:
 
 - [`users`](https://github.com/pepeunlimited/users)
-- [`authorization-twirp`](https://github.com/pepeunlimited/authorization-twirp)
+- [`authentication-twirp`](https://github.com/pepeunlimited/authentication-twirp)
 - [`files`](https://github.com/pepeunlimited/files)
 - [`payments`](https://github.com/pepeunlimited/payments)
 

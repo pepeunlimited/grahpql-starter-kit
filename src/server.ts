@@ -3,9 +3,9 @@ import { ApolloServer } from 'apollo-server'
 import schema from './resolvers';
 import { Rpc, Context } from 'ts-rpc-client';
 import { UserServiceClientImpl } from './rpc/user';
-import { AuthorizationServiceClientImpl } from './rpc/authorization';
 import {SpacesServiceClientImpl} from "./rpc/spaces";
 import {CredentialsServiceClientImpl} from "./rpc/credentials";
+import {AuthenticationServiceClientImpl} from "./rpc/authentication";
 
 const server = new ApolloServer({ 
   schema,
@@ -20,12 +20,12 @@ const server = new ApolloServer({
 
     const rpc =           new Rpc(host, port);
     
-    const authorization = new AuthorizationServiceClientImpl<Context>(rpc);
+    const authentication = new AuthenticationServiceClientImpl<Context>(rpc);
     const user =          new UserServiceClientImpl<Context>(rpc);
     const spaces =        new SpacesServiceClientImpl<Context>(rpc);
     const credentials  =  new CredentialsServiceClientImpl<Context>(rpc);
 
-    return { models: { user, authorization, spaces, credentials }, ctx: ctx };
+    return { models: { user, authentication, spaces, credentials }, ctx: ctx };
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground
