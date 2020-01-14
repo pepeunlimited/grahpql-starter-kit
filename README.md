@@ -1,14 +1,24 @@
 # grahpql-starter-kit
 
-Services which are listed on below; GraphQL glues them together providing an single-point-access for the API consumers.
+Microservices which are listed on below; GraphQL glues them together providing an single-point-access for the API consumers.
 
-## Microservices:
+Services communicates each others via gRPC.
 
-- [`users`](https://github.com/pepeunlimited/users)
-- [`authentication-twirp`](https://github.com/pepeunlimited/authentication-twirp)
-- [`files`](https://github.com/pepeunlimited/files)
-- [`payments`](https://github.com/pepeunlimited/payments)
+### Services:
 
+- [x] [`users`](https://github.com/pepeunlimited/users)
+- [x] [`authentication-twirp`](https://github.com/pepeunlimited/authentication-twirp)
+- [x] [`files`](https://github.com/pepeunlimited/files)
+- [ ] [`apple-payments`](https://github.com/pepeunlimited/apple-payments)
+    -   validate in-app-purchases from AppleStore
+    -   validate ApplePay    
+- [ ] [`purchases`](https://github.com/pepeunlimited/purchases)
+    -   products which the user has bought
+- [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
+    -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
+- [ ] [`products`](https://github.com/pepeunlimited/products)               
+    -   list of different products: IAP, Lists and etc..
+    
 #### Misc:
 
 ```
