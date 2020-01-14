@@ -1,6 +1,6 @@
 # grahpql-starter-kit
 
-The microservices which we had implemented, GraphQL glues them together providing an single-point-access for the consumers.
+Services which are listed on below; GraphQL glues them together providing an single-point-access for the API consumers.
 
 ## Microservices:
 
