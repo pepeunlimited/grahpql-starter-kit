@@ -24,6 +24,8 @@ Services communicates each others via gRPC.
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
 - [ ] [`products`](https://github.com/pepeunlimited/products)
     -   list of different products: IAPs, Lists and etc..
+- [ ] [`accounts`](https://github.com/pepeunlimited/accounts)
+    -   service which holds the user's account (balance and etc..). 
     
 #### Misc:
 
