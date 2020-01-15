@@ -1,6 +1,6 @@
 # grahpql-starter-kit
 
-Microservices which are listed on below; GraphQL glues them together providing an single-point-access for the API consumers.
+Microservices which are listed on below; GraphQL glues them together providing an single-point-access (gateway) for the API consumer.
 
 Services communicates each others via gRPC.
 
@@ -15,7 +15,7 @@ Services communicates each others via gRPC.
     -   products which the user has bought
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
-- [ ] [`products`](https://github.com/pepeunlimited/products)               
+- [ ] [`products`](https://github.com/pepeunlimited/products)
     -   list of different products: IAP, Lists and etc..
     
 #### Misc:
