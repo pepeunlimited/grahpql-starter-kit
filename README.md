@@ -4,6 +4,13 @@ Microservices which are listed on below; GraphQL glues them together providing a
 
 Services communicates each others via gRPC.
 
+### `/src`
+`src` folder contains files for the API and `server.ts` is the actual GraphQL server.
+
+#### `/resolvers`
+
+#### `/rpc`
+
 ### Services:
 
 - [x] [`users`](https://github.com/pepeunlimited/users)
@@ -16,7 +23,7 @@ Services communicates each others via gRPC.
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
 - [ ] [`products`](https://github.com/pepeunlimited/products)
-    -   list of different products: IAP, Lists and etc..
+    -   list of different products: IAPs, Lists and etc..
     
 #### Misc:
 
