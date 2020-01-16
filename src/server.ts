@@ -6,14 +6,17 @@ import { UserServiceClientImpl } from './rpc/user';
 import {SpacesServiceClientImpl} from "./rpc/spaces";
 import {CredentialsServiceClientImpl} from "./rpc/credentials";
 import {AuthenticationServiceClientImpl} from "./rpc/authentication";
+import {isNullOrUndefined} from "util";
 
 const server = new ApolloServer({ 
   schema,
   context: ({ req }) => {
     const ctx = new Context();
     const token = req.headers.authorization as string;
-    ctx.accessToken = token;
-
+    if (!isNullOrUndefined(token)) {
+      ctx.accessToken = token.replace('Bearer ','');
+    }
+    ctx.isDebug = true;
     // TODO: move to the .env-file
     const host: string = "api.dev.pepeunlimited.com";
     const port: number = 80;

@@ -8,6 +8,7 @@ import { isUserError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { File, SpacesService } from '../rpc/spaces';
 import { isSpacesError } from "../error/spaces";
+import { AuthenticationService } from "../rpc/authentication";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -34,9 +35,12 @@ export const resolvers: IResolvers = {
   Query: {
     user: async (_, { }, context): Promise<User> => {
       const ctx = context.ctx as Context;
-      const token = ctx.accessToken as String;
+      const token = ctx.accessToken as string;
       const userService = context.models.user as UserService<Context>;
+      const authService = context.models.authentication as AuthenticationService<Context>;
       try {
+        const verify = await authService.VerifyAccessToken(ctx, { accessToken: token});
+        ctx.userId = verify.userId;
         const user = await userService.GetUser(ctx, {});
         context.user = user;
         return user;
@@ -72,9 +76,14 @@ export const resolvers: IResolvers = {
     },
     setProfilePicture: async (_source, { fileID }, context): Promise<Boolean> => {
       const ctx = context.ctx as Context;
+      const token = ctx.accessToken as string;
       const userService = context.models.user as UserService<Context>;
+      const authService = context.models.authentication as AuthenticationService<Context>;
       try {
-        const resp0 = await userService.SetProfilePicture(ctx, { profilePictureId: fileID });
+        // verify the refreshToken
+        const resp0 =  await authService.VerifyAccessToken(ctx, { accessToken: token });
+        ctx.userId = resp0.userId;
+        const resp1 = await userService.SetProfilePicture(ctx, { profilePictureId: fileID });
         return true
       } catch (error) {
         if (isTwirpError(error)) {

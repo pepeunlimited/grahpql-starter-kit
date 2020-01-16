@@ -6,6 +6,8 @@ import { isAccessRefreshError } from "../error/authorization";
 import { isUserError, isTicketError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { CredentialsService } from "../rpc/credentials";
+import {UserService} from "../rpc/user";
+import {AuthenticationService} from "../rpc/authentication";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -27,7 +29,11 @@ export const resolvers: IResolvers = {
         updatePassword: async (_source, { currentPassword, newPassword }, context): Promise<Boolean> => {
             const ctx = context.ctx as Context;
             const credentials = context.models.credentials as CredentialsService<Context>;
+            const token = ctx.accessToken as string;
+            const authService = context.models.authentication as AuthenticationService<Context>;
             try {
+                const verify = await authService.VerifyAccessToken(ctx, { accessToken: token });
+                ctx.userId = verify.userId;
                 await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword });
                 return true
             } catch (error) {

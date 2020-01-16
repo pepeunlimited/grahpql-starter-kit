@@ -26,7 +26,8 @@ Services communicates each others via gRPC.
     -   list of different products: IAPs, Lists and etc..
 - [ ] [`accounts`](https://github.com/pepeunlimited/accounts)
     -   service which holds the user's account (balance and etc..). 
-    
+ - [ ] [`accounts`](https://github.com/pepeunlimited/accounts)
+     -   service which holds the user's account (balance and etc..).
 #### Misc:
 
 ```

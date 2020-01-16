@@ -4,8 +4,8 @@ import { isTwirpError, Context } from "ts-rpc-client";
 import { UserService, User } from "../rpc/user";
 import { isUserError } from "../error/user";
 import { isAccessRefreshError } from "../error/authorization";
-import {isValidationError} from "../error/validation";
-import {AuthenticationService} from "../rpc/authentication";
+import { isValidationError } from "../error/validation";
+import { AuthenticationService } from "../rpc/authentication";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
@@ -27,7 +27,8 @@ export const resolvers: IResolvers = {
       const authenticationService = context.models.authentication as AuthenticationService<Context>;
       try {
         const auth = await authenticationService.SignIn(ctx, { username: username, password: password });
-        ctx.accessToken = `Bearer ${auth.accessToken}`;
+        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: auth.accessToken});
+        ctx.userId = verify.userId;
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
@@ -43,7 +44,8 @@ export const resolvers: IResolvers = {
       const authenticationService = context.models.authentication as AuthenticationService<Context>;
       try {
         const auth = await authenticationService.RefreshAccessToken(ctx, { refreshToken });
-        ctx.accessToken = `Bearer ${auth.accessToken}`;
+        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: auth.accessToken});
+        ctx.userId = verify.userId;
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
