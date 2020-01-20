@@ -29,12 +29,8 @@ export const resolvers: IResolvers = {
         updatePassword: async (_source, { currentPassword, newPassword }, context): Promise<Boolean> => {
             const ctx = context.ctx as Context;
             const credentials = context.models.credentials as CredentialsService<Context>;
-            const token = ctx.accessToken as string;
-            const authService = context.models.authentication as AuthenticationService<Context>;
             try {
-                const verify = await authService.VerifyAccessToken(ctx, { accessToken: token });
-                ctx.userId = verify.userId;
-                await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword });
+                await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword, userId: ctx.userId as number });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {

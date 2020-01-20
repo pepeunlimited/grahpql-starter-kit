@@ -15,7 +15,7 @@ export const typeDef: ITypedef = `
   type AuthPayload {
     refreshToken: String
     accessToken: String!
-    user: User
+    me: User!
   }
 `;
 
@@ -27,8 +27,6 @@ export const resolvers: IResolvers = {
       const authenticationService = context.models.authentication as AuthenticationService<Context>;
       try {
         const auth = await authenticationService.SignIn(ctx, { username: username, password: password });
-        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: auth.accessToken});
-        ctx.userId = verify.userId;
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
@@ -44,8 +42,6 @@ export const resolvers: IResolvers = {
       const authenticationService = context.models.authentication as AuthenticationService<Context>;
       try {
         const auth = await authenticationService.RefreshAccessToken(ctx, { refreshToken });
-        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: auth.accessToken});
-        ctx.userId = verify.userId;
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
@@ -59,11 +55,15 @@ export const resolvers: IResolvers = {
     },
   },
   AuthPayload: {
-    user: async (_source, {}, context): Promise<User> => {
+    me: async (parent, _, context): Promise<User> => {
       const ctx = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
+      const authenticationService = context.models.authentication as AuthenticationService<Context>;
       try {
-        const user = await userService.GetUser(ctx, {});
+        const authPayload = parent as AuthPayload;
+        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: authPayload.accessToken});
+        const user = await userService.GetUser(ctx, { userId: verify.userId });
+        ctx.userId = user.id;
         return user
       } catch (error) {
         if (isTwirpError(error)) {

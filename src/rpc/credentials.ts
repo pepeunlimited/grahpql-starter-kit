@@ -12,6 +12,7 @@ export interface VerifySignInParams {
 export interface UpdatePasswordParams {
   currentPassword: string;
   newPassword: string;
+  userId: number;
 }
 
 export interface ForgotPasswordParams {
@@ -44,6 +45,7 @@ const baseVerifySignInParams: object = {
 const baseUpdatePasswordParams: object = {
   currentPassword: "",
   newPassword: "",
+  userId: 0,
 };
 
 const baseForgotPasswordParams: object = {
@@ -78,7 +80,7 @@ export interface CredentialsService<Context extends DataLoaders> {
 
   ResetPassword(ctx: Context, request: ResetPasswordParams): Promise<Empty>;
 
-  VerifySignIn(ctx: Context, request: Empty): Promise<VerifySignInResponse>;
+  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<VerifySignInResponse>;
 
 }
 
@@ -114,8 +116,8 @@ export class CredentialsServiceClientImpl<Context extends DataLoaders> implement
     return promise.then(data => Empty.decode(new Reader(data)));
   }
 
-  VerifySignIn(ctx: Context, request: Empty): Promise<VerifySignInResponse> {
-    const data = Empty.encode(request).finish();
+  VerifySignIn(ctx: Context, request: VerifySignInParams): Promise<VerifySignInResponse> {
+    const data = VerifySignInParams.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.users.CredentialsService", "VerifySignIn", data);
     return promise.then(data => VerifySignInResponse.decode(new Reader(data)));
   }
@@ -198,6 +200,7 @@ export const UpdatePasswordParams = {
   encode(message: UpdatePasswordParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(10).string(message.currentPassword);
     writer.uint32(18).string(message.newPassword);
+    writer.uint32(24).int64(message.userId);
     return writer;
   },
   decode(reader: Reader, length?: number): UpdatePasswordParams {
@@ -211,6 +214,9 @@ export const UpdatePasswordParams = {
           break;
         case 2:
           message.newPassword = reader.string();
+          break;
+        case 3:
+          message.userId = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -227,6 +233,9 @@ export const UpdatePasswordParams = {
     if (object.newPassword) {
       message.newPassword = String(object.newPassword);
     }
+    if (object.userId) {
+      message.userId = Number(object.userId);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<UpdatePasswordParams>): UpdatePasswordParams {
@@ -237,12 +246,16 @@ export const UpdatePasswordParams = {
     if (object.newPassword) {
       message.newPassword = object.newPassword;
     }
+    if (object.userId) {
+      message.userId = object.userId;
+    }
     return message;
   },
   toJSON(message: UpdatePasswordParams): unknown {
     const obj: any = {};
     obj.currentPassword = message.currentPassword || "";
     obj.newPassword = message.newPassword || "";
+    obj.userId = message.userId || 0;
     return obj;
   },
 };

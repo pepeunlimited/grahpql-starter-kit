@@ -1,21 +1,24 @@
 import { IResolvers, ITypedef } from "graphql-tools";
 import { User, UserService } from '../rpc/user';
 import { isTwirpError } from 'ts-rpc-client';
-import { ApolloError } from "apollo-server";
+import {ApolloError, AuthenticationError, ForbiddenError, UserInputError} from "apollo-server";
 import { Context } from "ts-rpc-client";
 import { isAccessRefreshError } from "../error/authorization";
 import { isUserError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { File, SpacesService } from '../rpc/spaces';
 import { isSpacesError } from "../error/spaces";
-import { AuthenticationService } from "../rpc/authentication";
+import {Account, AccountService} from "../rpc/account";
+import {isAccountError} from "../error/accounts";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
   extend type Query {
-    # Get the user. requires sign-in (Authorization)
-    user: User!
+    # get user by id
+    user(id: ID!): User!
+    # signed-in user
+    me: User!
   }
   extend type Mutation {
     # create the new user
@@ -29,20 +32,39 @@ export const typeDef: ITypedef = `
     email: String!
     roles: [String]!
     profilePicture: File
-  }
+    accounts(accountType: AccountType): [Account]!
+  }  
 `;
+
 export const resolvers: IResolvers = {
   Query: {
-    user: async (_, { }, context): Promise<User> => {
+    user: async (_, { id }, context): Promise<User> => {
       const ctx = context.ctx as Context;
-      const token = ctx.accessToken as string;
       const userService = context.models.user as UserService<Context>;
-      const authService = context.models.authentication as AuthenticationService<Context>;
+      if (id == null) {
+        throw new UserInputError("user_id")
+      }
       try {
-        const verify = await authService.VerifyAccessToken(ctx, { accessToken: token});
-        ctx.userId = verify.userId;
-        const user = await userService.GetUser(ctx, {});
-        context.user = user;
+        const user = await userService.GetUser(ctx, { userId: id });
+        return user;
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isAccessRefreshError(error);
+          isUserError(error);
+          isValidationError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    },
+    me: async (_, { }, context): Promise<User> => {
+      const ctx = context.ctx as Context;
+      const userService = context.models.user as UserService<Context>;
+      if (ctx.userId == null) {
+        throw new AuthenticationError("authorization")
+      }
+      try {
+        const user = await userService.GetUser(ctx, {userId: ctx.userId as number});
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
@@ -76,14 +98,18 @@ export const resolvers: IResolvers = {
     },
     setProfilePicture: async (_source, { fileID }, context): Promise<Boolean> => {
       const ctx = context.ctx as Context;
-      const token = ctx.accessToken as string;
       const userService = context.models.user as UserService<Context>;
-      const authService = context.models.authentication as AuthenticationService<Context>;
+      const spacesService = context.models.spaces as SpacesService<Context>;
+      const userId = ctx.userId;
+      if (userId == null) {
+        throw new AuthenticationError("authorization")
+      }
       try {
-        // verify the refreshToken
-        const resp0 =  await authService.VerifyAccessToken(ctx, { accessToken: token });
-        ctx.userId = resp0.userId;
-        const resp1 = await userService.SetProfilePicture(ctx, { profilePictureId: fileID });
+        const resp0 = await spacesService.GetFile(ctx, { fileId: fileID, filename: undefined });
+        if (resp0.userId != userId) {
+          throw new ForbiddenError("access_denied")
+        }
+        const resp1 = await userService.SetProfilePicture(ctx, { profilePictureId: fileID, userId: userId });
         return true
       } catch (error) {
         if (isTwirpError(error)) {
@@ -98,19 +124,48 @@ export const resolvers: IResolvers = {
     },
   },
   User: {
-    profilePicture: async (_source, {  }, context): Promise<File|null> => {
+    profilePicture: async (parent, _, context): Promise<File|null> => {
       const ctx = context.ctx as Context;
       const spacesService = context.models.spaces as SpacesService<Context>;
       try {
-        const user = context.user as User; // NOTE: not sure, is this proper way..
-        if (user.profilePictureId == 0) {
-          return null;
-        }
-        const file = await spacesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined });
-        return file
+        const user = parent as User;
+        const file = await spacesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined});
+        return file;
       } catch (error) {
         if (isTwirpError(error)) {
           isSpacesError(error)
+          isAccessRefreshError(error);
+          isUserError(error);
+          isValidationError(error);
+        }
+        console.log(error); // unknown error
+        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+      }
+    },
+    accounts: async (parent, { accountType }, context): Promise<Account[]|null> => {
+      const ctx = context.ctx as Context;
+      const accountService = context.models.accounts as AccountService<Context>;
+      const user = parent as User;
+      const userId = ctx.userId;
+      // Me:     1
+      //         !=
+      // UserID: 3
+      // = FAIL
+      // Me:     1
+      //         =
+      // UserID: 1
+      // = OK
+      if (user.id != userId) {
+        // throw error
+        throw new ForbiddenError("access_denied")
+      }
+      try {
+        const resp0 = await accountService.GetAccounts(ctx, { accountType: accountType, userId });
+        return resp0.accounts;
+      } catch (error) {
+        if (isTwirpError(error)) {
+          isAccountError(error);
+          isSpacesError(error);
           isAccessRefreshError(error);
           isUserError(error);
           isValidationError(error);
