@@ -39,8 +39,8 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
   Query: {
     user: async (_, { id }, context): Promise<User> => {
-      const ctx = context.ctx as Context;
-      const userService = context.models.user as UserService<Context>;
+      const ctx             = context.ctx as Context;
+      const userService     = context.models.user as UserService<Context>;
       if (id == null) {
         throw new UserInputError("user_id")
       }
@@ -57,7 +57,7 @@ export const resolvers: IResolvers = {
       }
     },
     me: async (_, { }, context): Promise<User> => {
-      const ctx = context.ctx as Context;
+      const ctx         = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
       if (ctx.userId == null) {
         throw new AuthenticationError("authorization")
@@ -77,17 +77,21 @@ export const resolvers: IResolvers = {
   },
   Mutation: {
     createUser: async (_source, { password, email, username }, context): Promise<User> => {
-      const ctx = context.ctx as Context;
-      const userService = context.models.user as UserService<Context>;
+      const ctx              = context.ctx as Context;
+      const userService      = context.models.user as UserService<Context>;
+      const accountsService  = context.models.accounts as AccountService<Context>;
       try {
         const user = await userService.CreateUser(ctx, {
           username: username,
           password: password,
           email: email
         });
+        await accountsService.CreateAccount(ctx, { accountType: "COIN", userId: user.id });
+        ctx.userId = user.id;
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
+          isAccountError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -95,8 +99,8 @@ export const resolvers: IResolvers = {
       }
     },
     setProfilePicture: async (_source, { fileID }, context): Promise<Boolean> => {
-      const ctx = context.ctx as Context;
-      const userService = context.models.user as UserService<Context>;
+      const ctx           = context.ctx as Context;
+      const userService   = context.models.user as UserService<Context>;
       const spacesService = context.models.spaces as SpacesService<Context>;
       const userId = ctx.userId;
       if (userId == null) {
@@ -126,8 +130,8 @@ export const resolvers: IResolvers = {
   },
   User: {
     profilePicture: async (parent, _, context): Promise<File|null> => {
-      const ctx = context.ctx as Context;
-      const spacesService = context.models.spaces as SpacesService<Context>;
+      const ctx             = context.ctx as Context;
+      const spacesService   = context.models.spaces as SpacesService<Context>;
       try {
         const user = parent as User;
         if (user.profilePictureId == 0) {
@@ -145,9 +149,9 @@ export const resolvers: IResolvers = {
       }
     },
     accounts: async (parent, { accountType }, context): Promise<Account[]|null> => {
-      const ctx = context.ctx as Context;
-      const accountService = context.models.accounts as AccountService<Context>;
-      const user = parent as User;
+      const ctx             = context.ctx as Context;
+      const accountService  = context.models.accounts as AccountService<Context>;
+      const user            = parent as User;
       const userId = ctx.userId;
       if (user.id != userId) {
         throw new ForbiddenError("access_denied")

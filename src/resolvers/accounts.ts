@@ -5,7 +5,7 @@ import { Context } from "ts-rpc-client";
 import { isUserError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { isAccountError } from "../error/accounts";
-import {AccountService} from "../rpc/account";
+import {AccountService, Account} from "../rpc/account";
 import {User, UserService} from "../rpc/user";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
@@ -13,7 +13,7 @@ import {User, UserService} from "../rpc/user";
 export const typeDef: ITypedef = `
   extend type Mutation {
     # creates deposit to the account
-    withdraw: Boolean!
+    withdraw(amount: Int!): Account!
   }
   type Account {
     id: ID!
@@ -29,7 +29,7 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
     Query: {},
     Mutation: {
-        withdraw: async (_source, { }, context): Promise<Boolean> => {
+        withdraw: async (_source, { amount }, context): Promise<Account> => {
             const ctx = context.ctx as Context;
             const accountService = context.models.accounts as AccountService<Context>;
             const userId = ctx.userId;
@@ -37,8 +37,8 @@ export const resolvers: IResolvers = {
                 throw new AuthenticationError("authorization");
             }
             try {
-                accountService.CreateWithdraw(ctx, {});
-                return true
+                const account = await accountService.CreateWithdraw(ctx, { amount: amount, userId: userId  });
+                return account
             } catch (error) {
                 if (isTwirpError(error)) {
                     isAccountError(error);
@@ -51,6 +51,7 @@ export const resolvers: IResolvers = {
     },
     Account: {
         user: async (parent, _, context): Promise<User> => {
+            //TODO: this is not done!
             const ctx = context.ctx as Context;
             const userService = context.models.user as UserService<Context>;
             try {

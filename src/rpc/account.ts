@@ -6,21 +6,26 @@ import { StringValue } from './google/protobuf/wrappers';
 
 
 export interface CreateDepositParams {
-}
-
-export interface CreateDepositResponse {
+  userId: number;
+  amount: number;
+  accountType: string;
 }
 
 export interface CreateWithdrawParams {
-}
-
-export interface CreateWithdrawResponse {
+  userId: number;
+  amount: number;
 }
 
 export interface CreateTransferParams {
+  fromUserId: number;
+  fromAmount: number;
+  toUserId: number;
+  toAmount: number;
 }
 
 export interface CreateTransferResponse {
+  from: Account | undefined;
+  to: Account | undefined;
 }
 
 export interface GetAccountsParams {
@@ -51,21 +56,26 @@ export interface Account {
 }
 
 const baseCreateDepositParams: object = {
-};
-
-const baseCreateDepositResponse: object = {
+  userId: 0,
+  amount: 0,
+  accountType: "",
 };
 
 const baseCreateWithdrawParams: object = {
-};
-
-const baseCreateWithdrawResponse: object = {
+  userId: 0,
+  amount: 0,
 };
 
 const baseCreateTransferParams: object = {
+  fromUserId: 0,
+  fromAmount: 0,
+  toUserId: 0,
+  toAmount: 0,
 };
 
 const baseCreateTransferResponse: object = {
+  from: undefined,
+  to: undefined,
 };
 
 const baseGetAccountsParams: object = {
@@ -97,9 +107,9 @@ const baseAccount: object = {
 
 export interface AccountService<Context extends DataLoaders> {
 
-  CreateDeposit(ctx: Context, request: CreateDepositParams): Promise<CreateDepositResponse>;
+  CreateDeposit(ctx: Context, request: CreateDepositParams): Promise<Account>;
 
-  CreateWithdraw(ctx: Context, request: CreateWithdrawParams): Promise<CreateWithdrawResponse>;
+  CreateWithdraw(ctx: Context, request: CreateWithdrawParams): Promise<Account>;
 
   CreateTransfer(ctx: Context, request: CreateTransferParams): Promise<CreateTransferResponse>;
 
@@ -119,16 +129,16 @@ export class AccountServiceClientImpl<Context extends DataLoaders> implements Ac
     this.rpc = rpc;
   }
 
-  CreateDeposit(ctx: Context, request: CreateDepositParams): Promise<CreateDepositResponse> {
+  CreateDeposit(ctx: Context, request: CreateDepositParams): Promise<Account> {
     const data = CreateDepositParams.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "CreateDeposit", data);
-    return promise.then(data => CreateDepositResponse.decode(new Reader(data)));
+    return promise.then(data => Account.decode(new Reader(data)));
   }
 
-  CreateWithdraw(ctx: Context, request: CreateWithdrawParams): Promise<CreateWithdrawResponse> {
+  CreateWithdraw(ctx: Context, request: CreateWithdrawParams): Promise<Account> {
     const data = CreateWithdrawParams.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "CreateWithdraw", data);
-    return promise.then(data => CreateWithdrawResponse.decode(new Reader(data)));
+    return promise.then(data => Account.decode(new Reader(data)));
   }
 
   CreateTransfer(ctx: Context, request: CreateTransferParams): Promise<CreateTransferResponse> {
@@ -194,6 +204,9 @@ function longToNumber(long: Long) {
 
 export const CreateDepositParams = {
   encode(message: CreateDepositParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.userId);
+    writer.uint32(16).int64(message.amount);
+    writer.uint32(26).string(message.accountType);
     return writer;
   },
   decode(reader: Reader, length?: number): CreateDepositParams {
@@ -202,6 +215,15 @@ export const CreateDepositParams = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.userId = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.amount = longToNumber(reader.int64() as Long);
+          break;
+        case 3:
+          message.accountType = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -211,51 +233,43 @@ export const CreateDepositParams = {
   },
   fromJSON(object: any): CreateDepositParams {
     const message = Object.create(baseCreateDepositParams) as CreateDepositParams;
+    if (object.userId) {
+      message.userId = Number(object.userId);
+    }
+    if (object.amount) {
+      message.amount = Number(object.amount);
+    }
+    if (object.accountType) {
+      message.accountType = String(object.accountType);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<CreateDepositParams>): CreateDepositParams {
     const message = Object.create(baseCreateDepositParams) as CreateDepositParams;
+    if (object.userId) {
+      message.userId = object.userId;
+    }
+    if (object.amount) {
+      message.amount = object.amount;
+    }
+    if (object.accountType) {
+      message.accountType = object.accountType;
+    }
     return message;
   },
   toJSON(message: CreateDepositParams): unknown {
     const obj: any = {};
-    return obj;
-  },
-};
-
-export const CreateDepositResponse = {
-  encode(message: CreateDepositResponse, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): CreateDepositResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateDepositResponse) as CreateDepositResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): CreateDepositResponse {
-    const message = Object.create(baseCreateDepositResponse) as CreateDepositResponse;
-    return message;
-  },
-  fromPartial(object: DeepPartial<CreateDepositResponse>): CreateDepositResponse {
-    const message = Object.create(baseCreateDepositResponse) as CreateDepositResponse;
-    return message;
-  },
-  toJSON(message: CreateDepositResponse): unknown {
-    const obj: any = {};
+    obj.userId = message.userId || 0;
+    obj.amount = message.amount || 0;
+    obj.accountType = message.accountType || "";
     return obj;
   },
 };
 
 export const CreateWithdrawParams = {
   encode(message: CreateWithdrawParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.userId);
+    writer.uint32(16).int64(message.amount);
     return writer;
   },
   decode(reader: Reader, length?: number): CreateWithdrawParams {
@@ -264,6 +278,12 @@ export const CreateWithdrawParams = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.userId = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.amount = longToNumber(reader.int64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -273,51 +293,38 @@ export const CreateWithdrawParams = {
   },
   fromJSON(object: any): CreateWithdrawParams {
     const message = Object.create(baseCreateWithdrawParams) as CreateWithdrawParams;
+    if (object.userId) {
+      message.userId = Number(object.userId);
+    }
+    if (object.amount) {
+      message.amount = Number(object.amount);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<CreateWithdrawParams>): CreateWithdrawParams {
     const message = Object.create(baseCreateWithdrawParams) as CreateWithdrawParams;
+    if (object.userId) {
+      message.userId = object.userId;
+    }
+    if (object.amount) {
+      message.amount = object.amount;
+    }
     return message;
   },
   toJSON(message: CreateWithdrawParams): unknown {
     const obj: any = {};
-    return obj;
-  },
-};
-
-export const CreateWithdrawResponse = {
-  encode(message: CreateWithdrawResponse, writer: Writer = Writer.create()): Writer {
-    return writer;
-  },
-  decode(reader: Reader, length?: number): CreateWithdrawResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateWithdrawResponse) as CreateWithdrawResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): CreateWithdrawResponse {
-    const message = Object.create(baseCreateWithdrawResponse) as CreateWithdrawResponse;
-    return message;
-  },
-  fromPartial(object: DeepPartial<CreateWithdrawResponse>): CreateWithdrawResponse {
-    const message = Object.create(baseCreateWithdrawResponse) as CreateWithdrawResponse;
-    return message;
-  },
-  toJSON(message: CreateWithdrawResponse): unknown {
-    const obj: any = {};
+    obj.userId = message.userId || 0;
+    obj.amount = message.amount || 0;
     return obj;
   },
 };
 
 export const CreateTransferParams = {
   encode(message: CreateTransferParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.fromUserId);
+    writer.uint32(16).int64(message.fromAmount);
+    writer.uint32(24).int64(message.toUserId);
+    writer.uint32(32).int64(message.toAmount);
     return writer;
   },
   decode(reader: Reader, length?: number): CreateTransferParams {
@@ -326,6 +333,18 @@ export const CreateTransferParams = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.fromUserId = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.fromAmount = longToNumber(reader.int64() as Long);
+          break;
+        case 3:
+          message.toUserId = longToNumber(reader.int64() as Long);
+          break;
+        case 4:
+          message.toAmount = longToNumber(reader.int64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -335,20 +354,54 @@ export const CreateTransferParams = {
   },
   fromJSON(object: any): CreateTransferParams {
     const message = Object.create(baseCreateTransferParams) as CreateTransferParams;
+    if (object.fromUserId) {
+      message.fromUserId = Number(object.fromUserId);
+    }
+    if (object.fromAmount) {
+      message.fromAmount = Number(object.fromAmount);
+    }
+    if (object.toUserId) {
+      message.toUserId = Number(object.toUserId);
+    }
+    if (object.toAmount) {
+      message.toAmount = Number(object.toAmount);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<CreateTransferParams>): CreateTransferParams {
     const message = Object.create(baseCreateTransferParams) as CreateTransferParams;
+    if (object.fromUserId) {
+      message.fromUserId = object.fromUserId;
+    }
+    if (object.fromAmount) {
+      message.fromAmount = object.fromAmount;
+    }
+    if (object.toUserId) {
+      message.toUserId = object.toUserId;
+    }
+    if (object.toAmount) {
+      message.toAmount = object.toAmount;
+    }
     return message;
   },
   toJSON(message: CreateTransferParams): unknown {
     const obj: any = {};
+    obj.fromUserId = message.fromUserId || 0;
+    obj.fromAmount = message.fromAmount || 0;
+    obj.toUserId = message.toUserId || 0;
+    obj.toAmount = message.toAmount || 0;
     return obj;
   },
 };
 
 export const CreateTransferResponse = {
   encode(message: CreateTransferResponse, writer: Writer = Writer.create()): Writer {
+    if (message.from !== undefined && message.from !== undefined) {
+      Account.encode(message.from, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.to !== undefined && message.to !== undefined) {
+      Account.encode(message.to, writer.uint32(18).fork()).ldelim();
+    }
     return writer;
   },
   decode(reader: Reader, length?: number): CreateTransferResponse {
@@ -357,6 +410,12 @@ export const CreateTransferResponse = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.from = Account.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.to = Account.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -366,14 +425,28 @@ export const CreateTransferResponse = {
   },
   fromJSON(object: any): CreateTransferResponse {
     const message = Object.create(baseCreateTransferResponse) as CreateTransferResponse;
+    if (object.from) {
+      message.from = Account.fromJSON(object.from);
+    }
+    if (object.to) {
+      message.to = Account.fromJSON(object.to);
+    }
     return message;
   },
   fromPartial(object: DeepPartial<CreateTransferResponse>): CreateTransferResponse {
     const message = Object.create(baseCreateTransferResponse) as CreateTransferResponse;
+    if (object.from) {
+      message.from = Account.fromPartial(object.from);
+    }
+    if (object.to) {
+      message.to = Account.fromPartial(object.to);
+    }
     return message;
   },
   toJSON(message: CreateTransferResponse): unknown {
     const obj: any = {};
+    obj.from = message.from ? Account.toJSON(message.from) : undefined;
+    obj.to = message.to ? Account.toJSON(message.to) : undefined;
     return obj;
   },
 };
