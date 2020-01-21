@@ -1,14 +1,10 @@
 import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
-import { ApolloError } from "apollo-server";
+import {ApolloError, AuthenticationError} from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isAccessRefreshError } from "../error/authorization";
 import { isUserError, isTicketError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { CredentialsService } from "../rpc/credentials";
-import {UserService} from "../rpc/user";
-import {AuthenticationService} from "../rpc/authentication";
-
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
@@ -29,13 +25,16 @@ export const resolvers: IResolvers = {
         updatePassword: async (_source, { currentPassword, newPassword }, context): Promise<Boolean> => {
             const ctx = context.ctx as Context;
             const credentials = context.models.credentials as CredentialsService<Context>;
+            const userId = ctx.userId;
+            if (userId == null) {
+                throw new AuthenticationError("authorization");
+            }
             try {
-                await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword, userId: ctx.userId as number });
+                await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword, userId: userId as number });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
                     isUserError(error);
-                    isAccessRefreshError(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error
@@ -46,13 +45,12 @@ export const resolvers: IResolvers = {
             const ctx = context.ctx as Context;
             const credentials = context.models.credentials as CredentialsService<Context>;
             try {
-                const language = "en" as string
+                const language = "en" as string;
                 await credentials.ForgotPassword(ctx, { username, email, language });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
                     isUserError(error);
-                    isAccessRefreshError(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error

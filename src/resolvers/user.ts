@@ -1,21 +1,21 @@
 import { IResolvers, ITypedef } from "graphql-tools";
 import { User, UserService } from '../rpc/user';
 import { isTwirpError } from 'ts-rpc-client';
-import {ApolloError, AuthenticationError, ForbiddenError, UserInputError} from "apollo-server";
+import { ApolloError, AuthenticationError, ForbiddenError, UserInputError } from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isAccessRefreshError } from "../error/authorization";
 import { isUserError } from "../error/user";
 import { isValidationError } from "../error/validation";
 import { File, SpacesService } from '../rpc/spaces';
 import { isSpacesError } from "../error/spaces";
-import {Account, AccountService} from "../rpc/account";
-import {isAccountError} from "../error/accounts";
+import { Account, AccountService } from "../rpc/account";
+import { isAccountError } from "../error/accounts";
+import { isForbiddenError } from "../error/forbidden_error";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
   extend type Query {
-    # get user by id
+    # user by id
     user(id: ID!): User!
     # signed-in user
     me: User!
@@ -49,7 +49,6 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccessRefreshError(error);
           isUserError(error);
           isValidationError(error);
         }
@@ -68,7 +67,6 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccessRefreshError(error);
           isUserError(error);
           isValidationError(error);
         }
@@ -106,6 +104,7 @@ export const resolvers: IResolvers = {
       }
       try {
         const resp0 = await spacesService.GetFile(ctx, { fileId: fileID, filename: undefined });
+        // limit access to only own files..
         if (resp0.userId != userId) {
           throw new ForbiddenError("access_denied")
         }
@@ -115,8 +114,10 @@ export const resolvers: IResolvers = {
         if (isTwirpError(error)) {
           isSpacesError(error);
           isUserError(error);
-          isAccessRefreshError(error);
           isValidationError(error);
+        }
+        if (isForbiddenError(error)) {
+          throw new ForbiddenError("access_denied")
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -129,13 +130,14 @@ export const resolvers: IResolvers = {
       const spacesService = context.models.spaces as SpacesService<Context>;
       try {
         const user = parent as User;
+        if (user.profilePictureId == 0) {
+          return null;
+        }
         const file = await spacesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined});
         return file;
       } catch (error) {
         if (isTwirpError(error)) {
-          isSpacesError(error)
-          isAccessRefreshError(error);
-          isUserError(error);
+          isSpacesError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -147,16 +149,7 @@ export const resolvers: IResolvers = {
       const accountService = context.models.accounts as AccountService<Context>;
       const user = parent as User;
       const userId = ctx.userId;
-      // Me:     1
-      //         !=
-      // UserID: 3
-      // = FAIL
-      // Me:     1
-      //         =
-      // UserID: 1
-      // = OK
       if (user.id != userId) {
-        // throw error
         throw new ForbiddenError("access_denied")
       }
       try {
@@ -165,9 +158,6 @@ export const resolvers: IResolvers = {
       } catch (error) {
         if (isTwirpError(error)) {
           isAccountError(error);
-          isSpacesError(error);
-          isAccessRefreshError(error);
-          isUserError(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
