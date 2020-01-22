@@ -11,18 +11,20 @@ import {AccountServiceClientImpl} from "./rpc/account";
 import {isAccessRefreshError} from "./error/authorization";
 import {isUserError} from "./error/user";
 import {isValidationError} from "./error/validation";
+import {CheckoutServiceClientImpl} from "./rpc/checkout";
 
 const server = new ApolloServer({
   schema,
   context: async ({req}) => {
-    const ctx = new Context();
+    const ctx           = new Context();
+    ctx.isDebug         = true;
     const authorization = req.headers.authorization as string;
 
-    const host: string = "api.dev.pepeunlimited.com";
-    const port: number = 80;
+    const host: string    = "api.dev.pepeunlimited.com";
+    const port: number    = 80;
 
-    const rpc = new Rpc(host, port);
-    const authentication = new AuthenticationServiceClientImpl<Context>(rpc);
+    const rpc             = new Rpc(host, port);
+    const authentication  = new AuthenticationServiceClientImpl<Context>(rpc);
 
     if (!isNullOrUndefined(authorization)) {
       const accessToken = authorization.replace('Bearer ', '');
@@ -39,14 +41,12 @@ const server = new ApolloServer({
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     }
-
-    ctx.isDebug = true;
-    const user = new UserServiceClientImpl<Context>(rpc);
-    const spaces = new SpacesServiceClientImpl<Context>(rpc);
+    const user        = new UserServiceClientImpl<Context>(rpc);
+    const spaces      = new SpacesServiceClientImpl<Context>(rpc);
     const credentials = new CredentialsServiceClientImpl<Context>(rpc);
-    const accounts = new AccountServiceClientImpl<Context>(rpc);
-
-    return {models: {user, authentication, spaces, credentials, accounts}, ctx: ctx};
+    const accounts    = new AccountServiceClientImpl<Context>(rpc);
+    const checkout    = new CheckoutServiceClientImpl<Context>(rpc);
+    return {models: {user, authentication, spaces, credentials, accounts, checkout}, ctx: ctx};
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground

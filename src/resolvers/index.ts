@@ -26,6 +26,11 @@ import {
   resolvers as accountsResolvers
 } from './accounts';
 
+import {
+  typeDef as Checkout,
+  resolvers as checkoutResolvers
+} from './checkout';
+
 const Query: ITypedef = `
   type Query {
     _empty: String
@@ -38,6 +43,6 @@ const Query: ITypedef = `
 const resolvers: IResolvers =  {};
 
 export default makeExecutableSchema({
-  typeDefs: [Query, User, Authentication, Spaces, Credentials, Accounts],
-  resolvers: merge(resolvers, userResolvers, authenticationResolvers, spacesResolvers, credentialsResolvers, accountsResolvers)
+  typeDefs: [Query, User, Authentication, Spaces, Credentials, Accounts, Checkout],
+  resolvers: merge(resolvers, userResolvers, authenticationResolvers, spacesResolvers, credentialsResolvers, accountsResolvers, checkoutResolvers)
 });
