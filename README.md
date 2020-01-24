@@ -16,7 +16,7 @@ Services communicates each others via gRPC.
 - [x] [`users`](https://github.com/pepeunlimited/users)
 - [x] [`authentication-twirp`](https://github.com/pepeunlimited/authentication-twirp)
 - [x] [`files`](https://github.com/pepeunlimited/files)
-- [ ] [`apple-payments`](https://github.com/pepeunlimited/apple-payments)
+- [ ] [`apple-iap`](https://github.com/pepeunlimited/apple-iap)
     -   validate IAPs (In-App-Purchases) from AppleStore
 - [ ] [`purchases`](https://github.com/pepeunlimited/purchases)
     -   products which the user has bought

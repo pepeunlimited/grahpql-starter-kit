@@ -46,7 +46,6 @@ export const resolvers: IResolvers = {
     },
     Account: {
         user: async (parent, _, context): Promise<User> => {
-            //TODO: this is not done!
             const ctx = context.ctx as Context;
             const userService = context.models.user as UserService<Context>;
             try {
