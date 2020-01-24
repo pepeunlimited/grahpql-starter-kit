@@ -1,7 +1,7 @@
 import {environment, getUserID} from './enviroment';
-import {ApolloError, ApolloServer} from 'apollo-server'
+import {ApolloServer} from 'apollo-server'
 import schema from './resolvers';
-import {Rpc, Context, isTwirpError} from 'ts-rpc-client';
+import {Rpc, Context} from 'ts-rpc-client';
 import {UserServiceClientImpl} from './rpc/user';
 import {SpacesServiceClientImpl} from "./rpc/spaces";
 import {CredentialsServiceClientImpl} from "./rpc/credentials";

@@ -1,10 +1,9 @@
-import {isNullOrUndefined} from "util";
 import {Context, isTwirpError} from "ts-rpc-client";
 import {isAccessRefreshError} from "./error/authorization";
 import {isUserError} from "./error/user";
 import {isValidationError} from "./error/validation";
 import {ApolloError} from "apollo-server";
-import {AuthenticationServiceClientImpl, VerifyAccessTokenResponse} from "./rpc/authentication";
+import {AuthenticationServiceClientImpl} from "./rpc/authentication";
 
 const defaultPort = 4000;
 
