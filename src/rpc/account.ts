@@ -8,7 +8,7 @@ import { StringValue } from './google/protobuf/wrappers';
 export interface CreateDepositParams {
   userId: number;
   amount: number;
-  accountType: string;
+  referenceNumber: string | undefined;
 }
 
 export interface CreateWithdrawParams {
@@ -16,49 +16,28 @@ export interface CreateWithdrawParams {
   amount: number;
 }
 
-export interface CreateTransferParams {
-  fromUserId: number;
-  fromAmount: number;
-  toUserId: number;
-  toAmount: number;
-}
-
-export interface CreateTransferResponse {
-  from: Account | undefined;
-  to: Account | undefined;
-}
-
-export interface GetAccountsParams {
-  accountType: string | undefined;
-  userId: number;
-}
-
 export interface CreateAccountParams {
-  accountType: string;
-  userId: number;
-}
-
-export interface GetAccountsResponse {
-  accounts: Account[];
   userId: number;
 }
 
 export interface GetAccountParams {
-  accountId: number;
   userId: number;
 }
 
 export interface Account {
-  balance: number;
-  type: string;
-  userId: number;
   id: number;
+  balance: number;
+  userId: number;
+}
+
+export interface UpdateAccountVerifiedParams {
+  userId: number;
 }
 
 const baseCreateDepositParams: object = {
   userId: 0,
   amount: 0,
-  accountType: "",
+  referenceNumber: undefined,
 };
 
 const baseCreateWithdrawParams: object = {
@@ -66,43 +45,22 @@ const baseCreateWithdrawParams: object = {
   amount: 0,
 };
 
-const baseCreateTransferParams: object = {
-  fromUserId: 0,
-  fromAmount: 0,
-  toUserId: 0,
-  toAmount: 0,
-};
-
-const baseCreateTransferResponse: object = {
-  from: undefined,
-  to: undefined,
-};
-
-const baseGetAccountsParams: object = {
-  accountType: undefined,
-  userId: 0,
-};
-
 const baseCreateAccountParams: object = {
-  accountType: "",
-  userId: 0,
-};
-
-const baseGetAccountsResponse: object = {
-  accounts: undefined,
   userId: 0,
 };
 
 const baseGetAccountParams: object = {
-  accountId: 0,
   userId: 0,
 };
 
 const baseAccount: object = {
-  balance: 0,
-  type: "",
-  userId: 0,
   id: 0,
+  balance: 0,
+  userId: 0,
+};
+
+const baseUpdateAccountVerifiedParams: object = {
+  userId: 0,
 };
 
 export interface AccountService<Context extends DataLoaders> {
@@ -111,13 +69,11 @@ export interface AccountService<Context extends DataLoaders> {
 
   CreateWithdraw(ctx: Context, request: CreateWithdrawParams): Promise<Account>;
 
-  CreateTransfer(ctx: Context, request: CreateTransferParams): Promise<CreateTransferResponse>;
-
   CreateAccount(ctx: Context, request: CreateAccountParams): Promise<Account>;
 
-  GetAccounts(ctx: Context, request: GetAccountsParams): Promise<GetAccountsResponse>;
-
   GetAccount(ctx: Context, request: GetAccountParams): Promise<Account>;
+
+  UpdateAccountVerified(ctx: Context, request: UpdateAccountVerifiedParams): Promise<Account>;
 
 }
 
@@ -141,30 +97,10 @@ export class AccountServiceClientImpl<Context extends DataLoaders> implements Ac
     return promise.then(data => Account.decode(new Reader(data)));
   }
 
-  CreateTransfer(ctx: Context, request: CreateTransferParams): Promise<CreateTransferResponse> {
-    const data = CreateTransferParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "CreateTransfer", data);
-    return promise.then(data => CreateTransferResponse.decode(new Reader(data)));
-  }
-
   CreateAccount(ctx: Context, request: CreateAccountParams): Promise<Account> {
     const data = CreateAccountParams.encode(request).finish();
     const promise = this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "CreateAccount", data);
     return promise.then(data => Account.decode(new Reader(data)));
-  }
-
-  GetAccounts(ctx: Context, request: GetAccountsParams): Promise<GetAccountsResponse> {
-    const dl = ctx.getDataLoader("pepeunlimited.accounts.AccountService.GetAccounts", () => {
-      return new DataLoader<GetAccountsParams, GetAccountsResponse>((requests) => {
-        const responses = requests.map(async request => {
-          const data = GetAccountsParams.encode(request).finish();
-          const response = await this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "GetAccounts", data);
-          return GetAccountsResponse.decode(new Reader(response));
-        })
-        return Promise.all(responses);
-      }, { cacheKeyFn: hash });
-    });
-    return dl.load(request);
   }
 
   GetAccount(ctx: Context, request: GetAccountParams): Promise<Account> {
@@ -179,6 +115,12 @@ export class AccountServiceClientImpl<Context extends DataLoaders> implements Ac
       }, { cacheKeyFn: hash });
     });
     return dl.load(request);
+  }
+
+  UpdateAccountVerified(ctx: Context, request: UpdateAccountVerifiedParams): Promise<Account> {
+    const data = UpdateAccountVerifiedParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.accounts.AccountService", "UpdateAccountVerified", data);
+    return promise.then(data => Account.decode(new Reader(data)));
   }
 
 }
@@ -206,7 +148,9 @@ export const CreateDepositParams = {
   encode(message: CreateDepositParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).int64(message.userId);
     writer.uint32(16).int64(message.amount);
-    writer.uint32(26).string(message.accountType);
+    if (message.referenceNumber !== undefined && message.referenceNumber !== undefined) {
+      StringValue.encode({ value: message.referenceNumber! }, writer.uint32(26).fork()).ldelim();
+    }
     return writer;
   },
   decode(reader: Reader, length?: number): CreateDepositParams {
@@ -222,7 +166,7 @@ export const CreateDepositParams = {
           message.amount = longToNumber(reader.int64() as Long);
           break;
         case 3:
-          message.accountType = reader.string();
+          message.referenceNumber = StringValue.decode(reader, reader.uint32()).value;
           break;
         default:
           reader.skipType(tag & 7);
@@ -239,8 +183,8 @@ export const CreateDepositParams = {
     if (object.amount) {
       message.amount = Number(object.amount);
     }
-    if (object.accountType) {
-      message.accountType = String(object.accountType);
+    if (object.referenceNumber) {
+      message.referenceNumber = String(object.referenceNumber);
     }
     return message;
   },
@@ -252,8 +196,8 @@ export const CreateDepositParams = {
     if (object.amount) {
       message.amount = object.amount;
     }
-    if (object.accountType) {
-      message.accountType = object.accountType;
+    if (object.referenceNumber) {
+      message.referenceNumber = object.referenceNumber;
     }
     return message;
   },
@@ -261,7 +205,7 @@ export const CreateDepositParams = {
     const obj: any = {};
     obj.userId = message.userId || 0;
     obj.amount = message.amount || 0;
-    obj.accountType = message.accountType || "";
+    obj.referenceNumber = message.referenceNumber || undefined;
     return obj;
   },
 };
@@ -319,197 +263,9 @@ export const CreateWithdrawParams = {
   },
 };
 
-export const CreateTransferParams = {
-  encode(message: CreateTransferParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.fromUserId);
-    writer.uint32(16).int64(message.fromAmount);
-    writer.uint32(24).int64(message.toUserId);
-    writer.uint32(32).int64(message.toAmount);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): CreateTransferParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateTransferParams) as CreateTransferParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.fromUserId = longToNumber(reader.int64() as Long);
-          break;
-        case 2:
-          message.fromAmount = longToNumber(reader.int64() as Long);
-          break;
-        case 3:
-          message.toUserId = longToNumber(reader.int64() as Long);
-          break;
-        case 4:
-          message.toAmount = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): CreateTransferParams {
-    const message = Object.create(baseCreateTransferParams) as CreateTransferParams;
-    if (object.fromUserId) {
-      message.fromUserId = Number(object.fromUserId);
-    }
-    if (object.fromAmount) {
-      message.fromAmount = Number(object.fromAmount);
-    }
-    if (object.toUserId) {
-      message.toUserId = Number(object.toUserId);
-    }
-    if (object.toAmount) {
-      message.toAmount = Number(object.toAmount);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<CreateTransferParams>): CreateTransferParams {
-    const message = Object.create(baseCreateTransferParams) as CreateTransferParams;
-    if (object.fromUserId) {
-      message.fromUserId = object.fromUserId;
-    }
-    if (object.fromAmount) {
-      message.fromAmount = object.fromAmount;
-    }
-    if (object.toUserId) {
-      message.toUserId = object.toUserId;
-    }
-    if (object.toAmount) {
-      message.toAmount = object.toAmount;
-    }
-    return message;
-  },
-  toJSON(message: CreateTransferParams): unknown {
-    const obj: any = {};
-    obj.fromUserId = message.fromUserId || 0;
-    obj.fromAmount = message.fromAmount || 0;
-    obj.toUserId = message.toUserId || 0;
-    obj.toAmount = message.toAmount || 0;
-    return obj;
-  },
-};
-
-export const CreateTransferResponse = {
-  encode(message: CreateTransferResponse, writer: Writer = Writer.create()): Writer {
-    if (message.from !== undefined && message.from !== undefined) {
-      Account.encode(message.from, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.to !== undefined && message.to !== undefined) {
-      Account.encode(message.to, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-  decode(reader: Reader, length?: number): CreateTransferResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateTransferResponse) as CreateTransferResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.from = Account.decode(reader, reader.uint32());
-          break;
-        case 2:
-          message.to = Account.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): CreateTransferResponse {
-    const message = Object.create(baseCreateTransferResponse) as CreateTransferResponse;
-    if (object.from) {
-      message.from = Account.fromJSON(object.from);
-    }
-    if (object.to) {
-      message.to = Account.fromJSON(object.to);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<CreateTransferResponse>): CreateTransferResponse {
-    const message = Object.create(baseCreateTransferResponse) as CreateTransferResponse;
-    if (object.from) {
-      message.from = Account.fromPartial(object.from);
-    }
-    if (object.to) {
-      message.to = Account.fromPartial(object.to);
-    }
-    return message;
-  },
-  toJSON(message: CreateTransferResponse): unknown {
-    const obj: any = {};
-    obj.from = message.from ? Account.toJSON(message.from) : undefined;
-    obj.to = message.to ? Account.toJSON(message.to) : undefined;
-    return obj;
-  },
-};
-
-export const GetAccountsParams = {
-  encode(message: GetAccountsParams, writer: Writer = Writer.create()): Writer {
-    if (message.accountType !== undefined && message.accountType !== undefined) {
-      StringValue.encode({ value: message.accountType! }, writer.uint32(10).fork()).ldelim();
-    }
-    writer.uint32(16).int64(message.userId);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): GetAccountsParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseGetAccountsParams) as GetAccountsParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.accountType = StringValue.decode(reader, reader.uint32()).value;
-          break;
-        case 2:
-          message.userId = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): GetAccountsParams {
-    const message = Object.create(baseGetAccountsParams) as GetAccountsParams;
-    if (object.accountType) {
-      message.accountType = String(object.accountType);
-    }
-    if (object.userId) {
-      message.userId = Number(object.userId);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<GetAccountsParams>): GetAccountsParams {
-    const message = Object.create(baseGetAccountsParams) as GetAccountsParams;
-    if (object.accountType) {
-      message.accountType = object.accountType;
-    }
-    if (object.userId) {
-      message.userId = object.userId;
-    }
-    return message;
-  },
-  toJSON(message: GetAccountsParams): unknown {
-    const obj: any = {};
-    obj.accountType = message.accountType || undefined;
-    obj.userId = message.userId || 0;
-    return obj;
-  },
-};
-
 export const CreateAccountParams = {
   encode(message: CreateAccountParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.accountType);
-    writer.uint32(16).int64(message.userId);
+    writer.uint32(8).int64(message.userId);
     return writer;
   },
   decode(reader: Reader, length?: number): CreateAccountParams {
@@ -519,9 +275,6 @@ export const CreateAccountParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accountType = reader.string();
-          break;
-        case 2:
           message.userId = longToNumber(reader.int64() as Long);
           break;
         default:
@@ -533,9 +286,6 @@ export const CreateAccountParams = {
   },
   fromJSON(object: any): CreateAccountParams {
     const message = Object.create(baseCreateAccountParams) as CreateAccountParams;
-    if (object.accountType) {
-      message.accountType = String(object.accountType);
-    }
     if (object.userId) {
       message.userId = Number(object.userId);
     }
@@ -543,9 +293,6 @@ export const CreateAccountParams = {
   },
   fromPartial(object: DeepPartial<CreateAccountParams>): CreateAccountParams {
     const message = Object.create(baseCreateAccountParams) as CreateAccountParams;
-    if (object.accountType) {
-      message.accountType = object.accountType;
-    }
     if (object.userId) {
       message.userId = object.userId;
     }
@@ -553,73 +300,6 @@ export const CreateAccountParams = {
   },
   toJSON(message: CreateAccountParams): unknown {
     const obj: any = {};
-    obj.accountType = message.accountType || "";
-    obj.userId = message.userId || 0;
-    return obj;
-  },
-};
-
-export const GetAccountsResponse = {
-  encode(message: GetAccountsResponse, writer: Writer = Writer.create()): Writer {
-    for (const v of message.accounts) {
-      Account.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    writer.uint32(16).int64(message.userId);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): GetAccountsResponse {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseGetAccountsResponse) as GetAccountsResponse;
-    message.accounts = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.accounts.push(Account.decode(reader, reader.uint32()));
-          break;
-        case 2:
-          message.userId = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): GetAccountsResponse {
-    const message = Object.create(baseGetAccountsResponse) as GetAccountsResponse;
-    message.accounts = [];
-    if (object.accounts) {
-      for (const e of object.accounts) {
-        message.accounts.push(Account.fromJSON(e));
-      }
-    }
-    if (object.userId) {
-      message.userId = Number(object.userId);
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<GetAccountsResponse>): GetAccountsResponse {
-    const message = Object.create(baseGetAccountsResponse) as GetAccountsResponse;
-    message.accounts = [];
-    if (object.accounts) {
-      for (const e of object.accounts) {
-        message.accounts.push(Account.fromPartial(e));
-      }
-    }
-    if (object.userId) {
-      message.userId = object.userId;
-    }
-    return message;
-  },
-  toJSON(message: GetAccountsResponse): unknown {
-    const obj: any = {};
-    if (message.accounts) {
-      obj.accounts = message.accounts.map(e => e ? Account.toJSON(e) : undefined);
-    } else {
-      obj.accounts = [];
-    }
     obj.userId = message.userId || 0;
     return obj;
   },
@@ -627,8 +307,7 @@ export const GetAccountsResponse = {
 
 export const GetAccountParams = {
   encode(message: GetAccountParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.accountId);
-    writer.uint32(16).int64(message.userId);
+    writer.uint32(8).int64(message.userId);
     return writer;
   },
   decode(reader: Reader, length?: number): GetAccountParams {
@@ -638,9 +317,6 @@ export const GetAccountParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accountId = longToNumber(reader.int64() as Long);
-          break;
-        case 2:
           message.userId = longToNumber(reader.int64() as Long);
           break;
         default:
@@ -652,9 +328,6 @@ export const GetAccountParams = {
   },
   fromJSON(object: any): GetAccountParams {
     const message = Object.create(baseGetAccountParams) as GetAccountParams;
-    if (object.accountId) {
-      message.accountId = Number(object.accountId);
-    }
     if (object.userId) {
       message.userId = Number(object.userId);
     }
@@ -662,9 +335,6 @@ export const GetAccountParams = {
   },
   fromPartial(object: DeepPartial<GetAccountParams>): GetAccountParams {
     const message = Object.create(baseGetAccountParams) as GetAccountParams;
-    if (object.accountId) {
-      message.accountId = object.accountId;
-    }
     if (object.userId) {
       message.userId = object.userId;
     }
@@ -672,7 +342,6 @@ export const GetAccountParams = {
   },
   toJSON(message: GetAccountParams): unknown {
     const obj: any = {};
-    obj.accountId = message.accountId || 0;
     obj.userId = message.userId || 0;
     return obj;
   },
@@ -680,10 +349,9 @@ export const GetAccountParams = {
 
 export const Account = {
   encode(message: Account, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.balance);
-    writer.uint32(18).string(message.type);
+    writer.uint32(8).int64(message.id);
+    writer.uint32(16).int64(message.balance);
     writer.uint32(24).int64(message.userId);
-    writer.uint32(32).int64(message.id);
     return writer;
   },
   decode(reader: Reader, length?: number): Account {
@@ -693,16 +361,13 @@ export const Account = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.balance = longToNumber(reader.int64() as Long);
+          message.id = longToNumber(reader.int64() as Long);
           break;
         case 2:
-          message.type = reader.string();
+          message.balance = longToNumber(reader.int64() as Long);
           break;
         case 3:
           message.userId = longToNumber(reader.int64() as Long);
-          break;
-        case 4:
-          message.id = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -713,42 +378,77 @@ export const Account = {
   },
   fromJSON(object: any): Account {
     const message = Object.create(baseAccount) as Account;
+    if (object.id) {
+      message.id = Number(object.id);
+    }
     if (object.balance) {
       message.balance = Number(object.balance);
     }
-    if (object.type) {
-      message.type = String(object.type);
-    }
     if (object.userId) {
       message.userId = Number(object.userId);
-    }
-    if (object.id) {
-      message.id = Number(object.id);
     }
     return message;
   },
   fromPartial(object: DeepPartial<Account>): Account {
     const message = Object.create(baseAccount) as Account;
+    if (object.id) {
+      message.id = object.id;
+    }
     if (object.balance) {
       message.balance = object.balance;
     }
-    if (object.type) {
-      message.type = object.type;
-    }
     if (object.userId) {
       message.userId = object.userId;
-    }
-    if (object.id) {
-      message.id = object.id;
     }
     return message;
   },
   toJSON(message: Account): unknown {
     const obj: any = {};
-    obj.balance = message.balance || 0;
-    obj.type = message.type || "";
-    obj.userId = message.userId || 0;
     obj.id = message.id || 0;
+    obj.balance = message.balance || 0;
+    obj.userId = message.userId || 0;
+    return obj;
+  },
+};
+
+export const UpdateAccountVerifiedParams = {
+  encode(message: UpdateAccountVerifiedParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.userId);
+    return writer;
+  },
+  decode(reader: Reader, length?: number): UpdateAccountVerifiedParams {
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = Object.create(baseUpdateAccountVerifiedParams) as UpdateAccountVerifiedParams;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.userId = longToNumber(reader.int64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromJSON(object: any): UpdateAccountVerifiedParams {
+    const message = Object.create(baseUpdateAccountVerifiedParams) as UpdateAccountVerifiedParams;
+    if (object.userId) {
+      message.userId = Number(object.userId);
+    }
+    return message;
+  },
+  fromPartial(object: DeepPartial<UpdateAccountVerifiedParams>): UpdateAccountVerifiedParams {
+    const message = Object.create(baseUpdateAccountVerifiedParams) as UpdateAccountVerifiedParams;
+    if (object.userId) {
+      message.userId = object.userId;
+    }
+    return message;
+  },
+  toJSON(message: UpdateAccountVerifiedParams): unknown {
+    const obj: any = {};
+    obj.userId = message.userId || 0;
     return obj;
   },
 };

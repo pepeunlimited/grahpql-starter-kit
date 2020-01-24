@@ -19,11 +19,6 @@ export const typeDef: ITypedef = `
     id: ID!
     balance: Int!
     user: User!
-    type: String!
-  }
-  enum AccountType {
-    COIN
-    CASH
   }
 `;
 export const resolvers: IResolvers = {

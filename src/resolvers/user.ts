@@ -32,7 +32,7 @@ export const typeDef: ITypedef = `
     email: String!
     roles: [String]!
     profilePicture: File
-    accounts(accountType: AccountType): [Account]!
+    account: Account!
   }  
 `;
 
@@ -79,14 +79,12 @@ export const resolvers: IResolvers = {
     createUser: async (_source, { password, email, username }, context): Promise<User> => {
       const ctx              = context.ctx as Context;
       const userService      = context.models.user as UserService<Context>;
-      const accountsService  = context.models.accounts as AccountService<Context>;
       try {
         const user = await userService.CreateUser(ctx, {
           username: username,
           password: password,
           email: email
         });
-        await accountsService.CreateAccount(ctx, { accountType: "COIN", userId: user.id });
         ctx.userId = user.id;
         return user;
       } catch (error) {
@@ -148,7 +146,7 @@ export const resolvers: IResolvers = {
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-    accounts: async (parent, { accountType }, context): Promise<Account[]|null> => {
+    account: async (parent, { accountType }, context): Promise<Account> => {
       const ctx             = context.ctx as Context;
       const accountService  = context.models.accounts as AccountService<Context>;
       const user            = parent as User;
@@ -157,8 +155,8 @@ export const resolvers: IResolvers = {
         throw new ForbiddenError("access_denied")
       }
       try {
-        const resp0 = await accountService.GetAccounts(ctx, { accountType: accountType, userId });
-        return resp0.accounts;
+        const account = await accountService.GetAccount(ctx, { userId });
+        return account;
       } catch (error) {
         if (isTwirpError(error)) {
           isAccountError(error);

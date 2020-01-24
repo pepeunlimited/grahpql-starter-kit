@@ -2,9 +2,10 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 
 
-export interface CreateOrderParams {
+export interface CreateGiftVoucherOrderParams {
   productId: number;
   userId: number;
+  giftVoucherId: string;
 }
 
 export interface CreateAppleIAPParams {
@@ -16,9 +17,10 @@ export interface CreateAppleIAPParams {
 export interface Checkout {
 }
 
-const baseCreateOrderParams: object = {
+const baseCreateGiftVoucherOrderParams: object = {
   productId: 0,
   userId: 0,
+  giftVoucherId: "",
 };
 
 const baseCreateAppleIAPParams: object = {
@@ -32,7 +34,7 @@ const baseCheckout: object = {
 
 export interface CheckoutService<Context extends DataLoaders> {
 
-  CreateOrder(ctx: Context, request: CreateOrderParams): Promise<Checkout>;
+  CreateGiftVoucherOrder(ctx: Context, request: CreateGiftVoucherOrderParams): Promise<Checkout>;
 
   CreateAppleIAP(ctx: Context, request: CreateAppleIAPParams): Promise<Checkout>;
 
@@ -46,9 +48,9 @@ export class CheckoutServiceClientImpl<Context extends DataLoaders> implements C
     this.rpc = rpc;
   }
 
-  CreateOrder(ctx: Context, request: CreateOrderParams): Promise<Checkout> {
-    const data = CreateOrderParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.checkout.CheckoutService", "CreateOrder", data);
+  CreateGiftVoucherOrder(ctx: Context, request: CreateGiftVoucherOrderParams): Promise<Checkout> {
+    const data = CreateGiftVoucherOrderParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.checkout.CheckoutService", "CreateGiftVoucherOrder", data);
     return promise.then(data => Checkout.decode(new Reader(data)));
   }
 
@@ -79,15 +81,16 @@ function longToNumber(long: Long) {
   return long.toNumber();
 }
 
-export const CreateOrderParams = {
-  encode(message: CreateOrderParams, writer: Writer = Writer.create()): Writer {
+export const CreateGiftVoucherOrderParams = {
+  encode(message: CreateGiftVoucherOrderParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).int64(message.productId);
     writer.uint32(16).int64(message.userId);
+    writer.uint32(26).string(message.giftVoucherId);
     return writer;
   },
-  decode(reader: Reader, length?: number): CreateOrderParams {
+  decode(reader: Reader, length?: number): CreateGiftVoucherOrderParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateOrderParams) as CreateOrderParams;
+    const message = Object.create(baseCreateGiftVoucherOrderParams) as CreateGiftVoucherOrderParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -97,6 +100,9 @@ export const CreateOrderParams = {
         case 2:
           message.userId = longToNumber(reader.int64() as Long);
           break;
+        case 3:
+          message.giftVoucherId = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -104,30 +110,37 @@ export const CreateOrderParams = {
     }
     return message;
   },
-  fromJSON(object: any): CreateOrderParams {
-    const message = Object.create(baseCreateOrderParams) as CreateOrderParams;
+  fromJSON(object: any): CreateGiftVoucherOrderParams {
+    const message = Object.create(baseCreateGiftVoucherOrderParams) as CreateGiftVoucherOrderParams;
     if (object.productId) {
       message.productId = Number(object.productId);
     }
     if (object.userId) {
       message.userId = Number(object.userId);
     }
+    if (object.giftVoucherId) {
+      message.giftVoucherId = String(object.giftVoucherId);
+    }
     return message;
   },
-  fromPartial(object: DeepPartial<CreateOrderParams>): CreateOrderParams {
-    const message = Object.create(baseCreateOrderParams) as CreateOrderParams;
+  fromPartial(object: DeepPartial<CreateGiftVoucherOrderParams>): CreateGiftVoucherOrderParams {
+    const message = Object.create(baseCreateGiftVoucherOrderParams) as CreateGiftVoucherOrderParams;
     if (object.productId) {
       message.productId = object.productId;
     }
     if (object.userId) {
       message.userId = object.userId;
     }
+    if (object.giftVoucherId) {
+      message.giftVoucherId = object.giftVoucherId;
+    }
     return message;
   },
-  toJSON(message: CreateOrderParams): unknown {
+  toJSON(message: CreateGiftVoucherOrderParams): unknown {
     const obj: any = {};
     obj.productId = message.productId || 0;
     obj.userId = message.userId || 0;
+    obj.giftVoucherId = message.giftVoucherId || "";
     return obj;
   },
 };
