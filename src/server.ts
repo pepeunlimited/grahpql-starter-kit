@@ -1,4 +1,4 @@
-import { environment } from './enviroment';
+import {environment, getUserID} from './enviroment';
 import {ApolloError, ApolloServer} from 'apollo-server'
 import schema from './resolvers';
 import {Rpc, Context, isTwirpError} from 'ts-rpc-client';
@@ -6,11 +6,7 @@ import {UserServiceClientImpl} from './rpc/user';
 import {SpacesServiceClientImpl} from "./rpc/spaces";
 import {CredentialsServiceClientImpl} from "./rpc/credentials";
 import {AuthenticationServiceClientImpl} from "./rpc/authentication";
-import {isNullOrUndefined} from "util";
 import {AccountServiceClientImpl} from "./rpc/account";
-import {isAccessRefreshError} from "./error/authorization";
-import {isUserError} from "./error/user";
-import {isValidationError} from "./error/validation";
 import {CheckoutServiceClientImpl} from "./rpc/checkout";
 
 const server = new ApolloServer({
@@ -25,27 +21,14 @@ const server = new ApolloServer({
 
     const rpc             = new Rpc(host, port);
     const authentication  = new AuthenticationServiceClientImpl<Context>(rpc);
+    const user            = new UserServiceClientImpl<Context>(rpc);
+    const spaces          = new SpacesServiceClientImpl<Context>(rpc);
+    const credentials     = new CredentialsServiceClientImpl<Context>(rpc);
+    const accounts        = new AccountServiceClientImpl<Context>(rpc);
+    const checkout        = new CheckoutServiceClientImpl<Context>(rpc);
 
-    if (!isNullOrUndefined(authorization)) {
-      const accessToken = authorization.replace('Bearer ', '');
-      try {
-        const verified = await authentication.VerifyAccessToken(ctx, { accessToken: accessToken });
-        ctx.userId = verified.userId;
-      } catch (error) {
-        if (isTwirpError(error)) {
-          isAccessRefreshError(error);
-          isUserError(error);
-          isValidationError(error);
-        }
-        console.log(error); // unknown error
-        throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
-      }
-    }
-    const user        = new UserServiceClientImpl<Context>(rpc);
-    const spaces      = new SpacesServiceClientImpl<Context>(rpc);
-    const credentials = new CredentialsServiceClientImpl<Context>(rpc);
-    const accounts    = new AccountServiceClientImpl<Context>(rpc);
-    const checkout    = new CheckoutServiceClientImpl<Context>(rpc);
+    ctx.userId = await getUserID(authorization, authentication, ctx);
+
     return {models: {user, authentication, spaces, credentials, accounts, checkout}, ctx: ctx};
   },
   introspection: environment.apollo.introspection,
