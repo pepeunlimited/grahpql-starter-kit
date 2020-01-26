@@ -5,16 +5,16 @@ import * as Long from 'long';
 import { Int64Value, StringValue } from './google/protobuf/wrappers';
 
 
-export interface CreateSpacesParams {
+export interface CreateBucketParams {
   name: string;
   endpoint: string;
 }
 
-export interface CreateSpacesResponse {
+export interface CreateBucketResponse {
   endpoint: string;
   cdnEndpoint: string;
   name: string;
-  spacesId: number;
+  bucketId: number;
 }
 
 export interface GetFileParams {
@@ -31,16 +31,16 @@ export interface GetFilesResponse {
   files: File[];
 }
 
-export interface GetSpacesParams {
+export interface GetBucketsParams {
   pageSize: number;
   pageToken: number;
 }
 
-export interface GetSpacesResponse {
-  spaces: Spaces[];
+export interface GetBucketsResponse {
+  buckets: Bucket[];
 }
 
-export interface Spaces {
+export interface Bucket {
   id: number;
   name: string;
 }
@@ -94,16 +94,16 @@ export interface File {
   fileUrl: string;
 }
 
-const baseCreateSpacesParams: object = {
+const baseCreateBucketParams: object = {
   name: "",
   endpoint: "",
 };
 
-const baseCreateSpacesResponse: object = {
+const baseCreateBucketResponse: object = {
   endpoint: "",
   cdnEndpoint: "",
   name: "",
-  spacesId: 0,
+  bucketId: 0,
 };
 
 const baseGetFileParams: object = {
@@ -120,16 +120,16 @@ const baseGetFilesResponse: object = {
   files: undefined,
 };
 
-const baseGetSpacesParams: object = {
+const baseGetBucketsParams: object = {
   pageSize: 0,
   pageToken: 0,
 };
 
-const baseGetSpacesResponse: object = {
-  spaces: undefined,
+const baseGetBucketsResponse: object = {
+  buckets: undefined,
 };
 
-const baseSpaces: object = {
+const baseBucket: object = {
   id: 0,
   name: "",
 };
@@ -183,13 +183,13 @@ const baseFile: object = {
   fileUrl: "",
 };
 
-export interface SpacesService<Context extends DataLoaders> {
+export interface FilesService<Context extends DataLoaders> {
 
   GetFile(ctx: Context, request: GetFileParams): Promise<File>;
 
   GetFiles(ctx: Context, request: GetFilesParams): Promise<GetFilesResponse>;
 
-  GetSpaces(ctx: Context, request: GetSpacesParams): Promise<GetSpacesResponse>;
+  GetBuckets(ctx: Context, request: GetBucketsParams): Promise<GetBucketsResponse>;
 
   Cut(ctx: Context, request: CutParams): Promise<CutResponse>;
 
@@ -197,11 +197,11 @@ export interface SpacesService<Context extends DataLoaders> {
 
   Wipe(ctx: Context, request: WipeParams): Promise<WipeParamsResponse>;
 
-  CreateSpaces(ctx: Context, request: CreateSpacesParams): Promise<CreateSpacesResponse>;
+  CreateBucket(ctx: Context, request: CreateBucketParams): Promise<CreateBucketResponse>;
 
 }
 
-export class SpacesServiceClientImpl<Context extends DataLoaders> implements SpacesService<Context> {
+export class FilesServiceClientImpl<Context extends DataLoaders> implements FilesService<Context> {
 
   private readonly rpc: Rpc<Context>;
 
@@ -210,11 +210,11 @@ export class SpacesServiceClientImpl<Context extends DataLoaders> implements Spa
   }
 
   GetFile(ctx: Context, request: GetFileParams): Promise<File> {
-    const dl = ctx.getDataLoader("pepeunlimited.files.SpacesService.GetFile", () => {
+    const dl = ctx.getDataLoader("pepeunlimited.files.FilesService.GetFile", () => {
       return new DataLoader<GetFileParams, File>((requests) => {
         const responses = requests.map(async request => {
           const data = GetFileParams.encode(request).finish();
-          const response = await this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "GetFile", data);
+          const response = await this.rpc.request(ctx, "pepeunlimited.files.FilesService", "GetFile", data);
           return File.decode(new Reader(response));
         })
         return Promise.all(responses);
@@ -224,11 +224,11 @@ export class SpacesServiceClientImpl<Context extends DataLoaders> implements Spa
   }
 
   GetFiles(ctx: Context, request: GetFilesParams): Promise<GetFilesResponse> {
-    const dl = ctx.getDataLoader("pepeunlimited.files.SpacesService.GetFiles", () => {
+    const dl = ctx.getDataLoader("pepeunlimited.files.FilesService.GetFiles", () => {
       return new DataLoader<GetFilesParams, GetFilesResponse>((requests) => {
         const responses = requests.map(async request => {
           const data = GetFilesParams.encode(request).finish();
-          const response = await this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "GetFiles", data);
+          const response = await this.rpc.request(ctx, "pepeunlimited.files.FilesService", "GetFiles", data);
           return GetFilesResponse.decode(new Reader(response));
         })
         return Promise.all(responses);
@@ -237,13 +237,13 @@ export class SpacesServiceClientImpl<Context extends DataLoaders> implements Spa
     return dl.load(request);
   }
 
-  GetSpaces(ctx: Context, request: GetSpacesParams): Promise<GetSpacesResponse> {
-    const dl = ctx.getDataLoader("pepeunlimited.files.SpacesService.GetSpaces", () => {
-      return new DataLoader<GetSpacesParams, GetSpacesResponse>((requests) => {
+  GetBuckets(ctx: Context, request: GetBucketsParams): Promise<GetBucketsResponse> {
+    const dl = ctx.getDataLoader("pepeunlimited.files.FilesService.GetBuckets", () => {
+      return new DataLoader<GetBucketsParams, GetBucketsResponse>((requests) => {
         const responses = requests.map(async request => {
-          const data = GetSpacesParams.encode(request).finish();
-          const response = await this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "GetSpaces", data);
-          return GetSpacesResponse.decode(new Reader(response));
+          const data = GetBucketsParams.encode(request).finish();
+          const response = await this.rpc.request(ctx, "pepeunlimited.files.FilesService", "GetBuckets", data);
+          return GetBucketsResponse.decode(new Reader(response));
         })
         return Promise.all(responses);
       }, { cacheKeyFn: hash });
@@ -253,26 +253,26 @@ export class SpacesServiceClientImpl<Context extends DataLoaders> implements Spa
 
   Cut(ctx: Context, request: CutParams): Promise<CutResponse> {
     const data = CutParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "Cut", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.files.FilesService", "Cut", data);
     return promise.then(data => CutResponse.decode(new Reader(data)));
   }
 
   Delete(ctx: Context, request: DeleteParams): Promise<DeleteResponse> {
     const data = DeleteParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "Delete", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.files.FilesService", "Delete", data);
     return promise.then(data => DeleteResponse.decode(new Reader(data)));
   }
 
   Wipe(ctx: Context, request: WipeParams): Promise<WipeParamsResponse> {
     const data = WipeParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "Wipe", data);
+    const promise = this.rpc.request(ctx, "pepeunlimited.files.FilesService", "Wipe", data);
     return promise.then(data => WipeParamsResponse.decode(new Reader(data)));
   }
 
-  CreateSpaces(ctx: Context, request: CreateSpacesParams): Promise<CreateSpacesResponse> {
-    const data = CreateSpacesParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.files.SpacesService", "CreateSpaces", data);
-    return promise.then(data => CreateSpacesResponse.decode(new Reader(data)));
+  CreateBucket(ctx: Context, request: CreateBucketParams): Promise<CreateBucketResponse> {
+    const data = CreateBucketParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.files.FilesService", "CreateBucket", data);
+    return promise.then(data => CreateBucketResponse.decode(new Reader(data)));
   }
 
 }
@@ -296,15 +296,15 @@ function longToNumber(long: Long) {
   return long.toNumber();
 }
 
-export const CreateSpacesParams = {
-  encode(message: CreateSpacesParams, writer: Writer = Writer.create()): Writer {
+export const CreateBucketParams = {
+  encode(message: CreateBucketParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(10).string(message.name);
     writer.uint32(18).string(message.endpoint);
     return writer;
   },
-  decode(reader: Reader, length?: number): CreateSpacesParams {
+  decode(reader: Reader, length?: number): CreateBucketParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateSpacesParams) as CreateSpacesParams;
+    const message = Object.create(baseCreateBucketParams) as CreateBucketParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -321,8 +321,8 @@ export const CreateSpacesParams = {
     }
     return message;
   },
-  fromJSON(object: any): CreateSpacesParams {
-    const message = Object.create(baseCreateSpacesParams) as CreateSpacesParams;
+  fromJSON(object: any): CreateBucketParams {
+    const message = Object.create(baseCreateBucketParams) as CreateBucketParams;
     if (object.name) {
       message.name = String(object.name);
     }
@@ -331,8 +331,8 @@ export const CreateSpacesParams = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<CreateSpacesParams>): CreateSpacesParams {
-    const message = Object.create(baseCreateSpacesParams) as CreateSpacesParams;
+  fromPartial(object: DeepPartial<CreateBucketParams>): CreateBucketParams {
+    const message = Object.create(baseCreateBucketParams) as CreateBucketParams;
     if (object.name) {
       message.name = object.name;
     }
@@ -341,7 +341,7 @@ export const CreateSpacesParams = {
     }
     return message;
   },
-  toJSON(message: CreateSpacesParams): unknown {
+  toJSON(message: CreateBucketParams): unknown {
     const obj: any = {};
     obj.name = message.name || "";
     obj.endpoint = message.endpoint || "";
@@ -349,17 +349,17 @@ export const CreateSpacesParams = {
   },
 };
 
-export const CreateSpacesResponse = {
-  encode(message: CreateSpacesResponse, writer: Writer = Writer.create()): Writer {
+export const CreateBucketResponse = {
+  encode(message: CreateBucketResponse, writer: Writer = Writer.create()): Writer {
     writer.uint32(10).string(message.endpoint);
     writer.uint32(18).string(message.cdnEndpoint);
     writer.uint32(26).string(message.name);
-    writer.uint32(32).int64(message.spacesId);
+    writer.uint32(32).int64(message.bucketId);
     return writer;
   },
-  decode(reader: Reader, length?: number): CreateSpacesResponse {
+  decode(reader: Reader, length?: number): CreateBucketResponse {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseCreateSpacesResponse) as CreateSpacesResponse;
+    const message = Object.create(baseCreateBucketResponse) as CreateBucketResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -373,7 +373,7 @@ export const CreateSpacesResponse = {
           message.name = reader.string();
           break;
         case 4:
-          message.spacesId = longToNumber(reader.int64() as Long);
+          message.bucketId = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -382,8 +382,8 @@ export const CreateSpacesResponse = {
     }
     return message;
   },
-  fromJSON(object: any): CreateSpacesResponse {
-    const message = Object.create(baseCreateSpacesResponse) as CreateSpacesResponse;
+  fromJSON(object: any): CreateBucketResponse {
+    const message = Object.create(baseCreateBucketResponse) as CreateBucketResponse;
     if (object.endpoint) {
       message.endpoint = String(object.endpoint);
     }
@@ -393,13 +393,13 @@ export const CreateSpacesResponse = {
     if (object.name) {
       message.name = String(object.name);
     }
-    if (object.spacesId) {
-      message.spacesId = Number(object.spacesId);
+    if (object.bucketId) {
+      message.bucketId = Number(object.bucketId);
     }
     return message;
   },
-  fromPartial(object: DeepPartial<CreateSpacesResponse>): CreateSpacesResponse {
-    const message = Object.create(baseCreateSpacesResponse) as CreateSpacesResponse;
+  fromPartial(object: DeepPartial<CreateBucketResponse>): CreateBucketResponse {
+    const message = Object.create(baseCreateBucketResponse) as CreateBucketResponse;
     if (object.endpoint) {
       message.endpoint = object.endpoint;
     }
@@ -409,17 +409,17 @@ export const CreateSpacesResponse = {
     if (object.name) {
       message.name = object.name;
     }
-    if (object.spacesId) {
-      message.spacesId = object.spacesId;
+    if (object.bucketId) {
+      message.bucketId = object.bucketId;
     }
     return message;
   },
-  toJSON(message: CreateSpacesResponse): unknown {
+  toJSON(message: CreateBucketResponse): unknown {
     const obj: any = {};
     obj.endpoint = message.endpoint || "";
     obj.cdnEndpoint = message.cdnEndpoint || "";
     obj.name = message.name || "";
-    obj.spacesId = message.spacesId || 0;
+    obj.bucketId = message.bucketId || 0;
     return obj;
   },
 };
@@ -589,15 +589,15 @@ export const GetFilesResponse = {
   },
 };
 
-export const GetSpacesParams = {
-  encode(message: GetSpacesParams, writer: Writer = Writer.create()): Writer {
+export const GetBucketsParams = {
+  encode(message: GetBucketsParams, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).int32(message.pageSize);
     writer.uint32(16).int64(message.pageToken);
     return writer;
   },
-  decode(reader: Reader, length?: number): GetSpacesParams {
+  decode(reader: Reader, length?: number): GetBucketsParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseGetSpacesParams) as GetSpacesParams;
+    const message = Object.create(baseGetBucketsParams) as GetBucketsParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -614,8 +614,8 @@ export const GetSpacesParams = {
     }
     return message;
   },
-  fromJSON(object: any): GetSpacesParams {
-    const message = Object.create(baseGetSpacesParams) as GetSpacesParams;
+  fromJSON(object: any): GetBucketsParams {
+    const message = Object.create(baseGetBucketsParams) as GetBucketsParams;
     if (object.pageSize) {
       message.pageSize = Number(object.pageSize);
     }
@@ -624,8 +624,8 @@ export const GetSpacesParams = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<GetSpacesParams>): GetSpacesParams {
-    const message = Object.create(baseGetSpacesParams) as GetSpacesParams;
+  fromPartial(object: DeepPartial<GetBucketsParams>): GetBucketsParams {
+    const message = Object.create(baseGetBucketsParams) as GetBucketsParams;
     if (object.pageSize) {
       message.pageSize = object.pageSize;
     }
@@ -634,7 +634,7 @@ export const GetSpacesParams = {
     }
     return message;
   },
-  toJSON(message: GetSpacesParams): unknown {
+  toJSON(message: GetBucketsParams): unknown {
     const obj: any = {};
     obj.pageSize = message.pageSize || 0;
     obj.pageToken = message.pageToken || 0;
@@ -642,22 +642,22 @@ export const GetSpacesParams = {
   },
 };
 
-export const GetSpacesResponse = {
-  encode(message: GetSpacesResponse, writer: Writer = Writer.create()): Writer {
-    for (const v of message.spaces) {
-      Spaces.encode(v!, writer.uint32(10).fork()).ldelim();
+export const GetBucketsResponse = {
+  encode(message: GetBucketsResponse, writer: Writer = Writer.create()): Writer {
+    for (const v of message.buckets) {
+      Bucket.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(reader: Reader, length?: number): GetSpacesResponse {
+  decode(reader: Reader, length?: number): GetBucketsResponse {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseGetSpacesResponse) as GetSpacesResponse;
-    message.spaces = [];
+    const message = Object.create(baseGetBucketsResponse) as GetBucketsResponse;
+    message.buckets = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.spaces.push(Spaces.decode(reader, reader.uint32()));
+          message.buckets.push(Bucket.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -666,46 +666,46 @@ export const GetSpacesResponse = {
     }
     return message;
   },
-  fromJSON(object: any): GetSpacesResponse {
-    const message = Object.create(baseGetSpacesResponse) as GetSpacesResponse;
-    message.spaces = [];
-    if (object.spaces) {
-      for (const e of object.spaces) {
-        message.spaces.push(Spaces.fromJSON(e));
+  fromJSON(object: any): GetBucketsResponse {
+    const message = Object.create(baseGetBucketsResponse) as GetBucketsResponse;
+    message.buckets = [];
+    if (object.buckets) {
+      for (const e of object.buckets) {
+        message.buckets.push(Bucket.fromJSON(e));
       }
     }
     return message;
   },
-  fromPartial(object: DeepPartial<GetSpacesResponse>): GetSpacesResponse {
-    const message = Object.create(baseGetSpacesResponse) as GetSpacesResponse;
-    message.spaces = [];
-    if (object.spaces) {
-      for (const e of object.spaces) {
-        message.spaces.push(Spaces.fromPartial(e));
+  fromPartial(object: DeepPartial<GetBucketsResponse>): GetBucketsResponse {
+    const message = Object.create(baseGetBucketsResponse) as GetBucketsResponse;
+    message.buckets = [];
+    if (object.buckets) {
+      for (const e of object.buckets) {
+        message.buckets.push(Bucket.fromPartial(e));
       }
     }
     return message;
   },
-  toJSON(message: GetSpacesResponse): unknown {
+  toJSON(message: GetBucketsResponse): unknown {
     const obj: any = {};
-    if (message.spaces) {
-      obj.spaces = message.spaces.map(e => e ? Spaces.toJSON(e) : undefined);
+    if (message.buckets) {
+      obj.buckets = message.buckets.map(e => e ? Bucket.toJSON(e) : undefined);
     } else {
-      obj.spaces = [];
+      obj.buckets = [];
     }
     return obj;
   },
 };
 
-export const Spaces = {
-  encode(message: Spaces, writer: Writer = Writer.create()): Writer {
+export const Bucket = {
+  encode(message: Bucket, writer: Writer = Writer.create()): Writer {
     writer.uint32(8).int64(message.id);
     writer.uint32(18).string(message.name);
     return writer;
   },
-  decode(reader: Reader, length?: number): Spaces {
+  decode(reader: Reader, length?: number): Bucket {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseSpaces) as Spaces;
+    const message = Object.create(baseBucket) as Bucket;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -722,8 +722,8 @@ export const Spaces = {
     }
     return message;
   },
-  fromJSON(object: any): Spaces {
-    const message = Object.create(baseSpaces) as Spaces;
+  fromJSON(object: any): Bucket {
+    const message = Object.create(baseBucket) as Bucket;
     if (object.id) {
       message.id = Number(object.id);
     }
@@ -732,8 +732,8 @@ export const Spaces = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<Spaces>): Spaces {
-    const message = Object.create(baseSpaces) as Spaces;
+  fromPartial(object: DeepPartial<Bucket>): Bucket {
+    const message = Object.create(baseBucket) as Bucket;
     if (object.id) {
       message.id = object.id;
     }
@@ -742,7 +742,7 @@ export const Spaces = {
     }
     return message;
   },
-  toJSON(message: Spaces): unknown {
+  toJSON(message: Bucket): unknown {
     const obj: any = {};
     obj.id = message.id || 0;
     obj.name = message.name || "";

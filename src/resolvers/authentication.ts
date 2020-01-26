@@ -2,10 +2,11 @@ import { ITypedef, IResolvers, ApolloError } from "apollo-server";
 import { AuthPayload } from "../models/authorization";
 import { isTwirpError, Context } from "ts-rpc-client";
 import { UserService, User } from "../rpc/user";
-import { isUserError } from "../error/user";
 import { isAccessRefreshError } from "../error/authorization";
 import { isValidationError } from "../error/validation";
 import { AuthenticationService } from "../rpc/authentication";
+import {isPermissionDenied} from "../error/permission_denied";
+import {isNotFound} from "../error/not_found";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
@@ -30,8 +31,9 @@ export const resolvers: IResolvers = {
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
+          isPermissionDenied(error);
+          isNotFound(error);
           isValidationError(error);
-          isUserError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -46,8 +48,9 @@ export const resolvers: IResolvers = {
       } catch (error) {
         if (isTwirpError(error)) {
           isAccessRefreshError((error));
+          isPermissionDenied(error);
+          isNotFound(error);
           isValidationError(error);
-          isUserError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -68,7 +71,8 @@ export const resolvers: IResolvers = {
       } catch (error) {
         if (isTwirpError(error)) {
           isAccessRefreshError(error);
-          isUserError(error);
+          isPermissionDenied(error);
+          isNotFound(error);
           isValidationError(error);
         }
         console.log(error); // unknown error

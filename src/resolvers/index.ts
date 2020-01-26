@@ -12,9 +12,9 @@ import {
 } from './authentication';
 
 import {
-  typeDef as Spaces,
-  resolvers as spacesResolvers
-} from './spaces';
+  typeDef as Files,
+  resolvers as filesResolvers
+} from './files';
 
 import {
   typeDef as Credentials,
@@ -43,6 +43,6 @@ const Query: ITypedef = `
 const resolvers: IResolvers =  {};
 
 export default makeExecutableSchema({
-  typeDefs: [Query, User, Authentication, Spaces, Credentials, Accounts, Checkout],
-  resolvers: merge(resolvers, userResolvers, authenticationResolvers, spacesResolvers, credentialsResolvers, accountsResolvers, checkoutResolvers)
+  typeDefs: [Query, User, Authentication, Files, Credentials, Accounts, Checkout],
+  resolvers: merge(resolvers, userResolvers, authenticationResolvers, filesResolvers, credentialsResolvers, accountsResolvers, checkoutResolvers)
 });

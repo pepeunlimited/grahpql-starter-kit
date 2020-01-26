@@ -4,7 +4,8 @@ import { ApolloError, AuthenticationError } from "apollo-server";
 import { Context } from "ts-rpc-client";
 import { isValidationError } from "../error/validation";
 import {Checkout, CheckoutService} from "../rpc/checkout";
-import {isAccountError} from "../error/accounts";
+import {isNotFound} from "../error/not_found";
+import {isAborted} from "../error/aaborted";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -34,7 +35,8 @@ export const resolvers: IResolvers = {
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isAccountError(error);
+                    isAborted(error);
+                    isNotFound(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error
@@ -53,6 +55,8 @@ export const resolvers: IResolvers = {
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {
+                    isAborted(error);
+                    isNotFound(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error

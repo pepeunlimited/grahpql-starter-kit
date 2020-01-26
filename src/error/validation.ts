@@ -5,10 +5,8 @@ export function isValidationError(error: TwirpError) {
     if (error.code == 'invalid_argument') {
         let message = error.argument;
         if (message === undefined) {
-            message = error.reason;
+            message = error.msg;
         }
         throw new UserInputError(message);
-    } else if(error.code == 'already_exists') {
-        throw new UserInputError(error.reason);
     }
 }

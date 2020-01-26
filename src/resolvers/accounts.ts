@@ -2,11 +2,12 @@ import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
 import { ApolloError, AuthenticationError } from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isUserError } from "../error/user";
 import { isValidationError } from "../error/validation";
-import { isAccountError } from "../error/accounts";
 import {AccountService, Account} from "../rpc/account";
 import {User, UserService} from "../rpc/user";
+import {isNotFound} from "../error/not_found";
+import {isPermissionDenied} from "../error/permission_denied";
+import {isAborted} from "../error/aaborted";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -36,7 +37,8 @@ export const resolvers: IResolvers = {
                 return account
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isAccountError(error);
+                    isAborted(error);
+                    isNotFound(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error
@@ -53,7 +55,8 @@ export const resolvers: IResolvers = {
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isUserError(error);
+                    isNotFound(error);
+                    isPermissionDenied(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error

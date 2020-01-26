@@ -1,15 +1,15 @@
-import { IResolvers, ITypedef } from "graphql-tools";
-import { User, UserService } from '../rpc/user';
-import { isTwirpError } from 'ts-rpc-client';
-import { ApolloError, AuthenticationError, ForbiddenError, UserInputError } from "apollo-server";
-import { Context } from "ts-rpc-client";
-import { isUserError } from "../error/user";
-import { isValidationError } from "../error/validation";
-import { File, SpacesService } from '../rpc/spaces';
-import { isSpacesError } from "../error/spaces";
-import { Account, AccountService } from "../rpc/account";
-import { isAccountError } from "../error/accounts";
-import { isForbiddenError } from "../error/forbidden_error";
+import {IResolvers, ITypedef} from "graphql-tools";
+import {User, UserService} from '../rpc/user';
+import {isTwirpError} from 'ts-rpc-client';
+import {ApolloError, AuthenticationError, ForbiddenError, UserInputError} from "apollo-server";
+import {Context} from "ts-rpc-client";
+import {isValidationError} from "../error/validation";
+import {Account, AccountService} from "../rpc/account";
+import {isForbiddenError} from "../error/forbidden_error";
+import {FilesService, File} from "../rpc/files";
+import {isAlreadyExist} from "../error/already_exist";
+import {isPermissionDenied} from "../error/permission_denied";
+import {isNotFound} from "../error/not_found";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -49,7 +49,8 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isUserError(error);
+          isPermissionDenied(error);
+          isNotFound(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -67,7 +68,8 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isUserError(error);
+          isPermissionDenied(error);
+          isNotFound(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -89,7 +91,7 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccountError(error);
+          isAlreadyExist(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -99,13 +101,13 @@ export const resolvers: IResolvers = {
     setProfilePicture: async (_source, { fileID }, context): Promise<Boolean> => {
       const ctx           = context.ctx as Context;
       const userService   = context.models.user as UserService<Context>;
-      const spacesService = context.models.spaces as SpacesService<Context>;
+      const filesService  = context.models.files as FilesService<Context>;
       const userId = ctx.userId;
       if (userId == null) {
         throw new AuthenticationError("authorization")
       }
       try {
-        const resp0 = await spacesService.GetFile(ctx, { fileId: fileID, filename: undefined });
+        const resp0 = await filesService.GetFile(ctx, { fileId: fileID, filename: undefined });
         // limit access to only own files..
         if (resp0.userId != userId) {
           throw new ForbiddenError("access_denied")
@@ -114,8 +116,8 @@ export const resolvers: IResolvers = {
         return true
       } catch (error) {
         if (isTwirpError(error)) {
-          isSpacesError(error);
-          isUserError(error);
+          isNotFound(error);
+          isPermissionDenied(error);
           isValidationError(error);
         }
         if (isForbiddenError(error)) {
@@ -129,17 +131,17 @@ export const resolvers: IResolvers = {
   User: {
     profilePicture: async (parent, _, context): Promise<File|null> => {
       const ctx             = context.ctx as Context;
-      const spacesService   = context.models.spaces as SpacesService<Context>;
+      const filesService  = context.models.files as FilesService<Context>;
       try {
         const user = parent as User;
         if (user.profilePictureId == 0) {
           return null;
         }
-        const file = await spacesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined});
+        const file = await filesService.GetFile(ctx, { fileId: user.profilePictureId, filename: undefined});
         return file;
       } catch (error) {
         if (isTwirpError(error)) {
-          isSpacesError(error);
+          isNotFound(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
@@ -159,7 +161,7 @@ export const resolvers: IResolvers = {
         return account;
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccountError(error);
+          isNotFound(error);
           isValidationError(error);
         }
         console.log(error); // unknown error
