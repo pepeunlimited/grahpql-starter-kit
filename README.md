@@ -4,6 +4,8 @@ Microservices which are listed on below; GraphQL glues them together providing a
 
 Services communicates each others via gRPC.
 
+Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testing purpose.
+
 ### `/src`
 `src` folder contains files for the API and `server.ts` is the actual GraphQL server.
 

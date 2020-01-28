@@ -6,7 +6,6 @@ import {isValidationError} from "../error/validation";
 import {CredentialsService} from "../rpc/credentials";
 import {isNotFound} from "../error/not_found";
 import {isPermissionDenied} from "../error/permission_denied";
-import {isTicketExpired} from "../error/ticket";
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
@@ -69,7 +68,6 @@ export const resolvers: IResolvers = {
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isTicketExpired(error);
                     isPermissionDenied(error);
                     isNotFound(error);
                     isValidationError(error);
@@ -86,7 +84,6 @@ export const resolvers: IResolvers = {
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isTicketExpired(error);
                     isPermissionDenied(error);
                     isNotFound(error);
                     isValidationError(error);
