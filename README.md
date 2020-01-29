@@ -2,7 +2,7 @@
 
 Microservices which are listed on below; GraphQL glues them together providing an single-point-access (gateway) for the API consumer.
 
-Services communicates each others via gRPC.
+Services communicates each others via gRPC. Borrowed the [`ts-proto`](https://github.com/stephenh/ts-proto) for client generation. 
 
 Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testing purpose.
 
