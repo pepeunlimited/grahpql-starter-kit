@@ -66,7 +66,7 @@ export const resolvers: IResolvers = {
         const authPayload = parent as AuthPayload;
         const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: authPayload.accessToken});
         const user = await userService.GetUser(ctx, { userId: verify.userId });
-        ctx.userId = user.id;
+        ctx.userId = user.id; // do not remove
         return user
       } catch (error) {
         if (isTwirpError(error)) {

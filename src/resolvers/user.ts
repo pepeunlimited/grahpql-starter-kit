@@ -87,7 +87,7 @@ export const resolvers: IResolvers = {
           password: password,
           email: email
         });
-        ctx.userId = user.id;
+        ctx.userId = user.id; // do not remove
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
@@ -131,7 +131,7 @@ export const resolvers: IResolvers = {
   User: {
     profilePicture: async (parent, _, context): Promise<File|null> => {
       const ctx             = context.ctx as Context;
-      const filesService  = context.models.files as FilesService<Context>;
+      const filesService    = context.models.files as FilesService<Context>;
       try {
         const user = parent as User;
         if (user.profilePictureId == 0) {
@@ -152,7 +152,7 @@ export const resolvers: IResolvers = {
       const ctx             = context.ctx as Context;
       const accountService  = context.models.accounts as AccountService<Context>;
       const user            = parent as User;
-      const userId = ctx.userId;
+      const userId          = ctx.userId;
       if (user.id != userId) {
         throw new ForbiddenError("access_denied")
       }
