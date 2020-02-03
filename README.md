@@ -20,14 +20,16 @@ Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testin
 - [x] [`files`](https://github.com/pepeunlimited/files)
 - [ ] [`apple-iap`](https://github.com/pepeunlimited/apple-iap)
     -   validate IAPs (In-App-Purchases) from AppleStore
-- [ ] [`purchases`](https://github.com/pepeunlimited/purchases)
-    -   products which the user has bought
+- [ ] [`billing`](https://github.com/pepeunlimited/billing)
+    -   the billing service
+- [ ] [`i18n`](https://github.com/pepeunlimited/i18n)
+    -   i18n service which handles translation for the items    
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
 - [ ] [`products`](https://github.com/pepeunlimited/products)
     -   list of different products: IAPs, Lists and etc..
 - [x] [`accounts`](https://github.com/pepeunlimited/accounts)
-    -   service which holds the user's account (balance and etc..). 
+    -   service which holds the user's account (balance and etc..).  
 #### Misc:
 
 ```
