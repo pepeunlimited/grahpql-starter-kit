@@ -323,21 +323,29 @@ export const CreateBucketParams = {
   },
   fromJSON(object: any): CreateBucketParams {
     const message = Object.create(baseCreateBucketParams) as CreateBucketParams;
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
-    if (object.endpoint) {
+    if (object.endpoint !== undefined && object.endpoint !== null) {
       message.endpoint = String(object.endpoint);
+    } else {
+      message.endpoint = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateBucketParams>): CreateBucketParams {
     const message = Object.create(baseCreateBucketParams) as CreateBucketParams;
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
-    if (object.endpoint) {
+    if (object.endpoint !== undefined && object.endpoint !== null) {
       message.endpoint = object.endpoint;
+    } else {
+      message.endpoint = "";
     }
     return message;
   },
@@ -384,33 +392,49 @@ export const CreateBucketResponse = {
   },
   fromJSON(object: any): CreateBucketResponse {
     const message = Object.create(baseCreateBucketResponse) as CreateBucketResponse;
-    if (object.endpoint) {
+    if (object.endpoint !== undefined && object.endpoint !== null) {
       message.endpoint = String(object.endpoint);
+    } else {
+      message.endpoint = "";
     }
-    if (object.cdnEndpoint) {
+    if (object.cdnEndpoint !== undefined && object.cdnEndpoint !== null) {
       message.cdnEndpoint = String(object.cdnEndpoint);
+    } else {
+      message.cdnEndpoint = "";
     }
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
-    if (object.bucketId) {
+    if (object.bucketId !== undefined && object.bucketId !== null) {
       message.bucketId = Number(object.bucketId);
+    } else {
+      message.bucketId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateBucketResponse>): CreateBucketResponse {
     const message = Object.create(baseCreateBucketResponse) as CreateBucketResponse;
-    if (object.endpoint) {
+    if (object.endpoint !== undefined && object.endpoint !== null) {
       message.endpoint = object.endpoint;
+    } else {
+      message.endpoint = "";
     }
-    if (object.cdnEndpoint) {
+    if (object.cdnEndpoint !== undefined && object.cdnEndpoint !== null) {
       message.cdnEndpoint = object.cdnEndpoint;
+    } else {
+      message.cdnEndpoint = "";
     }
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
-    if (object.bucketId) {
+    if (object.bucketId !== undefined && object.bucketId !== null) {
       message.bucketId = object.bucketId;
+    } else {
+      message.bucketId = 0;
     }
     return message;
   },
@@ -455,21 +479,29 @@ export const GetFileParams = {
   },
   fromJSON(object: any): GetFileParams {
     const message = Object.create(baseGetFileParams) as GetFileParams;
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = Number(object.fileId);
+    } else {
+      message.fileId = undefined;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromJSON(object.filename);
+    } else {
+      message.filename = undefined;
     }
     return message;
   },
   fromPartial(object: DeepPartial<GetFileParams>): GetFileParams {
     const message = Object.create(baseGetFileParams) as GetFileParams;
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = object.fileId;
+    } else {
+      message.fileId = undefined;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromPartial(object.filename);
+    } else {
+      message.filename = undefined;
     }
     return message;
   },
@@ -508,21 +540,29 @@ export const GetFilesParams = {
   },
   fromJSON(object: any): GetFilesParams {
     const message = Object.create(baseGetFilesParams) as GetFilesParams;
-    if (object.pageSize) {
+    if (object.pageSize !== undefined && object.pageSize !== null) {
       message.pageSize = Number(object.pageSize);
+    } else {
+      message.pageSize = 0;
     }
-    if (object.pageToken) {
+    if (object.pageToken !== undefined && object.pageToken !== null) {
       message.pageToken = Number(object.pageToken);
+    } else {
+      message.pageToken = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<GetFilesParams>): GetFilesParams {
     const message = Object.create(baseGetFilesParams) as GetFilesParams;
-    if (object.pageSize) {
+    if (object.pageSize !== undefined && object.pageSize !== null) {
       message.pageSize = object.pageSize;
+    } else {
+      message.pageSize = 0;
     }
-    if (object.pageToken) {
+    if (object.pageToken !== undefined && object.pageToken !== null) {
       message.pageToken = object.pageToken;
+    } else {
+      message.pageToken = 0;
     }
     return message;
   },
@@ -561,7 +601,7 @@ export const GetFilesResponse = {
   fromJSON(object: any): GetFilesResponse {
     const message = Object.create(baseGetFilesResponse) as GetFilesResponse;
     message.files = [];
-    if (object.files) {
+    if (object.files !== undefined && object.files !== null) {
       for (const e of object.files) {
         message.files.push(File.fromJSON(e));
       }
@@ -571,7 +611,7 @@ export const GetFilesResponse = {
   fromPartial(object: DeepPartial<GetFilesResponse>): GetFilesResponse {
     const message = Object.create(baseGetFilesResponse) as GetFilesResponse;
     message.files = [];
-    if (object.files) {
+    if (object.files !== undefined && object.files !== null) {
       for (const e of object.files) {
         message.files.push(File.fromPartial(e));
       }
@@ -616,21 +656,29 @@ export const GetBucketsParams = {
   },
   fromJSON(object: any): GetBucketsParams {
     const message = Object.create(baseGetBucketsParams) as GetBucketsParams;
-    if (object.pageSize) {
+    if (object.pageSize !== undefined && object.pageSize !== null) {
       message.pageSize = Number(object.pageSize);
+    } else {
+      message.pageSize = 0;
     }
-    if (object.pageToken) {
+    if (object.pageToken !== undefined && object.pageToken !== null) {
       message.pageToken = Number(object.pageToken);
+    } else {
+      message.pageToken = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<GetBucketsParams>): GetBucketsParams {
     const message = Object.create(baseGetBucketsParams) as GetBucketsParams;
-    if (object.pageSize) {
+    if (object.pageSize !== undefined && object.pageSize !== null) {
       message.pageSize = object.pageSize;
+    } else {
+      message.pageSize = 0;
     }
-    if (object.pageToken) {
+    if (object.pageToken !== undefined && object.pageToken !== null) {
       message.pageToken = object.pageToken;
+    } else {
+      message.pageToken = 0;
     }
     return message;
   },
@@ -669,7 +717,7 @@ export const GetBucketsResponse = {
   fromJSON(object: any): GetBucketsResponse {
     const message = Object.create(baseGetBucketsResponse) as GetBucketsResponse;
     message.buckets = [];
-    if (object.buckets) {
+    if (object.buckets !== undefined && object.buckets !== null) {
       for (const e of object.buckets) {
         message.buckets.push(Bucket.fromJSON(e));
       }
@@ -679,7 +727,7 @@ export const GetBucketsResponse = {
   fromPartial(object: DeepPartial<GetBucketsResponse>): GetBucketsResponse {
     const message = Object.create(baseGetBucketsResponse) as GetBucketsResponse;
     message.buckets = [];
-    if (object.buckets) {
+    if (object.buckets !== undefined && object.buckets !== null) {
       for (const e of object.buckets) {
         message.buckets.push(Bucket.fromPartial(e));
       }
@@ -724,21 +772,29 @@ export const Bucket = {
   },
   fromJSON(object: any): Bucket {
     const message = Object.create(baseBucket) as Bucket;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
+    } else {
+      message.id = 0;
     }
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<Bucket>): Bucket {
     const message = Object.create(baseBucket) as Bucket;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = 0;
     }
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
     return message;
   },
@@ -791,33 +847,49 @@ export const CutParams = {
   },
   fromJSON(object: any): CutParams {
     const message = Object.create(baseCutParams) as CutParams;
-    if (object.toSpacesName) {
+    if (object.toSpacesName !== undefined && object.toSpacesName !== null) {
       message.toSpacesName = String(object.toSpacesName);
+    } else {
+      message.toSpacesName = undefined;
     }
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = Number(object.fileId);
+    } else {
+      message.fileId = 0;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromJSON(object.filename);
+    } else {
+      message.filename = undefined;
     }
-    if (object.toSpacesId) {
+    if (object.toSpacesId !== undefined && object.toSpacesId !== null) {
       message.toSpacesId = Number(object.toSpacesId);
+    } else {
+      message.toSpacesId = undefined;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CutParams>): CutParams {
     const message = Object.create(baseCutParams) as CutParams;
-    if (object.toSpacesName) {
+    if (object.toSpacesName !== undefined && object.toSpacesName !== null) {
       message.toSpacesName = object.toSpacesName;
+    } else {
+      message.toSpacesName = undefined;
     }
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = object.fileId;
+    } else {
+      message.fileId = 0;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromPartial(object.filename);
+    } else {
+      message.filename = undefined;
     }
-    if (object.toSpacesId) {
+    if (object.toSpacesId !== undefined && object.toSpacesId !== null) {
       message.toSpacesId = object.toSpacesId;
+    } else {
+      message.toSpacesId = undefined;
     }
     return message;
   },
@@ -858,21 +930,29 @@ export const CutResponse = {
   },
   fromJSON(object: any): CutResponse {
     const message = Object.create(baseCutResponse) as CutResponse;
-    if (object.newBucketName) {
+    if (object.newBucketName !== undefined && object.newBucketName !== null) {
       message.newBucketName = String(object.newBucketName);
+    } else {
+      message.newBucketName = "";
     }
-    if (object.newBucketId) {
+    if (object.newBucketId !== undefined && object.newBucketId !== null) {
       message.newBucketId = Number(object.newBucketId);
+    } else {
+      message.newBucketId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CutResponse>): CutResponse {
     const message = Object.create(baseCutResponse) as CutResponse;
-    if (object.newBucketName) {
+    if (object.newBucketName !== undefined && object.newBucketName !== null) {
       message.newBucketName = object.newBucketName;
+    } else {
+      message.newBucketName = "";
     }
-    if (object.newBucketId) {
+    if (object.newBucketId !== undefined && object.newBucketId !== null) {
       message.newBucketId = object.newBucketId;
+    } else {
+      message.newBucketId = 0;
     }
     return message;
   },
@@ -911,21 +991,29 @@ export const WipeParams = {
   },
   fromJSON(object: any): WipeParams {
     const message = Object.create(baseWipeParams) as WipeParams;
-    if (object.bucketName) {
+    if (object.bucketName !== undefined && object.bucketName !== null) {
       message.bucketName = String(object.bucketName);
+    } else {
+      message.bucketName = "";
     }
-    if (object.isDeleteSpaces) {
+    if (object.isDeleteSpaces !== undefined && object.isDeleteSpaces !== null) {
       message.isDeleteSpaces = Boolean(object.isDeleteSpaces);
+    } else {
+      message.isDeleteSpaces = false;
     }
     return message;
   },
   fromPartial(object: DeepPartial<WipeParams>): WipeParams {
     const message = Object.create(baseWipeParams) as WipeParams;
-    if (object.bucketName) {
+    if (object.bucketName !== undefined && object.bucketName !== null) {
       message.bucketName = object.bucketName;
+    } else {
+      message.bucketName = "";
     }
-    if (object.isDeleteSpaces) {
+    if (object.isDeleteSpaces !== undefined && object.isDeleteSpaces !== null) {
       message.isDeleteSpaces = object.isDeleteSpaces;
+    } else {
+      message.isDeleteSpaces = false;
     }
     return message;
   },
@@ -960,15 +1048,19 @@ export const WipeParamsResponse = {
   },
   fromJSON(object: any): WipeParamsResponse {
     const message = Object.create(baseWipeParamsResponse) as WipeParamsResponse;
-    if (object.deletedCount) {
+    if (object.deletedCount !== undefined && object.deletedCount !== null) {
       message.deletedCount = Number(object.deletedCount);
+    } else {
+      message.deletedCount = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<WipeParamsResponse>): WipeParamsResponse {
     const message = Object.create(baseWipeParamsResponse) as WipeParamsResponse;
-    if (object.deletedCount) {
+    if (object.deletedCount !== undefined && object.deletedCount !== null) {
       message.deletedCount = object.deletedCount;
+    } else {
+      message.deletedCount = 0;
     }
     return message;
   },
@@ -1014,27 +1106,39 @@ export const DeleteParams = {
   },
   fromJSON(object: any): DeleteParams {
     const message = Object.create(baseDeleteParams) as DeleteParams;
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = Number(object.fileId);
+    } else {
+      message.fileId = undefined;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromJSON(object.filename);
+    } else {
+      message.filename = undefined;
     }
-    if (object.isPermanent) {
+    if (object.isPermanent !== undefined && object.isPermanent !== null) {
       message.isPermanent = Boolean(object.isPermanent);
+    } else {
+      message.isPermanent = false;
     }
     return message;
   },
   fromPartial(object: DeepPartial<DeleteParams>): DeleteParams {
     const message = Object.create(baseDeleteParams) as DeleteParams;
-    if (object.fileId) {
+    if (object.fileId !== undefined && object.fileId !== null) {
       message.fileId = object.fileId;
+    } else {
+      message.fileId = undefined;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = Filename.fromPartial(object.filename);
+    } else {
+      message.filename = undefined;
     }
-    if (object.isPermanent) {
+    if (object.isPermanent !== undefined && object.isPermanent !== null) {
       message.isPermanent = object.isPermanent;
+    } else {
+      message.isPermanent = false;
     }
     return message;
   },
@@ -1113,27 +1217,39 @@ export const Filename = {
   },
   fromJSON(object: any): Filename {
     const message = Object.create(baseFilename) as Filename;
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = String(object.name);
+    } else {
+      message.name = "";
     }
-    if (object.bucketId) {
+    if (object.bucketId !== undefined && object.bucketId !== null) {
       message.bucketId = Number(object.bucketId);
+    } else {
+      message.bucketId = undefined;
     }
-    if (object.bucketName) {
+    if (object.bucketName !== undefined && object.bucketName !== null) {
       message.bucketName = String(object.bucketName);
+    } else {
+      message.bucketName = undefined;
     }
     return message;
   },
   fromPartial(object: DeepPartial<Filename>): Filename {
     const message = Object.create(baseFilename) as Filename;
-    if (object.name) {
+    if (object.name !== undefined && object.name !== null) {
       message.name = object.name;
+    } else {
+      message.name = "";
     }
-    if (object.bucketId) {
+    if (object.bucketId !== undefined && object.bucketId !== null) {
       message.bucketId = object.bucketId;
+    } else {
+      message.bucketId = undefined;
     }
-    if (object.bucketName) {
+    if (object.bucketName !== undefined && object.bucketName !== null) {
       message.bucketName = object.bucketName;
+    } else {
+      message.bucketName = undefined;
     }
     return message;
   },
@@ -1205,69 +1321,109 @@ export const File = {
   },
   fromJSON(object: any): File {
     const message = Object.create(baseFile) as File;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
+    } else {
+      message.id = 0;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = String(object.filename);
+    } else {
+      message.filename = "";
     }
-    if (object.createdAt) {
+    if (object.createdAt !== undefined && object.createdAt !== null) {
       message.createdAt = String(object.createdAt);
+    } else {
+      message.createdAt = "";
     }
-    if (object.updatedAt) {
+    if (object.updatedAt !== undefined && object.updatedAt !== null) {
       message.updatedAt = String(object.updatedAt);
+    } else {
+      message.updatedAt = "";
     }
-    if (object.mimeType) {
+    if (object.mimeType !== undefined && object.mimeType !== null) {
       message.mimeType = String(object.mimeType);
+    } else {
+      message.mimeType = "";
     }
-    if (object.fileSize) {
+    if (object.fileSize !== undefined && object.fileSize !== null) {
       message.fileSize = Number(object.fileSize);
+    } else {
+      message.fileSize = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
-    if (object.isDraft) {
+    if (object.isDraft !== undefined && object.isDraft !== null) {
       message.isDraft = Boolean(object.isDraft);
+    } else {
+      message.isDraft = false;
     }
-    if (object.spacesId) {
+    if (object.spacesId !== undefined && object.spacesId !== null) {
       message.spacesId = Number(object.spacesId);
+    } else {
+      message.spacesId = 0;
     }
-    if (object.fileUrl) {
+    if (object.fileUrl !== undefined && object.fileUrl !== null) {
       message.fileUrl = String(object.fileUrl);
+    } else {
+      message.fileUrl = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<File>): File {
     const message = Object.create(baseFile) as File;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = 0;
     }
-    if (object.filename) {
+    if (object.filename !== undefined && object.filename !== null) {
       message.filename = object.filename;
+    } else {
+      message.filename = "";
     }
-    if (object.createdAt) {
+    if (object.createdAt !== undefined && object.createdAt !== null) {
       message.createdAt = object.createdAt;
+    } else {
+      message.createdAt = "";
     }
-    if (object.updatedAt) {
+    if (object.updatedAt !== undefined && object.updatedAt !== null) {
       message.updatedAt = object.updatedAt;
+    } else {
+      message.updatedAt = "";
     }
-    if (object.mimeType) {
+    if (object.mimeType !== undefined && object.mimeType !== null) {
       message.mimeType = object.mimeType;
+    } else {
+      message.mimeType = "";
     }
-    if (object.fileSize) {
+    if (object.fileSize !== undefined && object.fileSize !== null) {
       message.fileSize = object.fileSize;
+    } else {
+      message.fileSize = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
-    if (object.isDraft) {
+    if (object.isDraft !== undefined && object.isDraft !== null) {
       message.isDraft = object.isDraft;
+    } else {
+      message.isDraft = false;
     }
-    if (object.spacesId) {
+    if (object.spacesId !== undefined && object.spacesId !== null) {
       message.spacesId = object.spacesId;
+    } else {
+      message.spacesId = 0;
     }
-    if (object.fileUrl) {
+    if (object.fileUrl !== undefined && object.fileUrl !== null) {
       message.fileUrl = object.fileUrl;
+    } else {
+      message.fileUrl = "";
     }
     return message;
   },

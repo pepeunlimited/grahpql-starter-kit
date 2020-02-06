@@ -177,27 +177,39 @@ export const CreateDepositParams = {
   },
   fromJSON(object: any): CreateDepositParams {
     const message = Object.create(baseCreateDepositParams) as CreateDepositParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
-    if (object.amount) {
+    if (object.amount !== undefined && object.amount !== null) {
       message.amount = Number(object.amount);
+    } else {
+      message.amount = 0;
     }
-    if (object.referenceNumber) {
+    if (object.referenceNumber !== undefined && object.referenceNumber !== null) {
       message.referenceNumber = String(object.referenceNumber);
+    } else {
+      message.referenceNumber = undefined;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateDepositParams>): CreateDepositParams {
     const message = Object.create(baseCreateDepositParams) as CreateDepositParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
-    if (object.amount) {
+    if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
+    } else {
+      message.amount = 0;
     }
-    if (object.referenceNumber) {
+    if (object.referenceNumber !== undefined && object.referenceNumber !== null) {
       message.referenceNumber = object.referenceNumber;
+    } else {
+      message.referenceNumber = undefined;
     }
     return message;
   },
@@ -237,21 +249,29 @@ export const CreateWithdrawParams = {
   },
   fromJSON(object: any): CreateWithdrawParams {
     const message = Object.create(baseCreateWithdrawParams) as CreateWithdrawParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
-    if (object.amount) {
+    if (object.amount !== undefined && object.amount !== null) {
       message.amount = Number(object.amount);
+    } else {
+      message.amount = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateWithdrawParams>): CreateWithdrawParams {
     const message = Object.create(baseCreateWithdrawParams) as CreateWithdrawParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
-    if (object.amount) {
+    if (object.amount !== undefined && object.amount !== null) {
       message.amount = object.amount;
+    } else {
+      message.amount = 0;
     }
     return message;
   },
@@ -286,15 +306,19 @@ export const CreateAccountParams = {
   },
   fromJSON(object: any): CreateAccountParams {
     const message = Object.create(baseCreateAccountParams) as CreateAccountParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateAccountParams>): CreateAccountParams {
     const message = Object.create(baseCreateAccountParams) as CreateAccountParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -328,15 +352,19 @@ export const GetAccountParams = {
   },
   fromJSON(object: any): GetAccountParams {
     const message = Object.create(baseGetAccountParams) as GetAccountParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<GetAccountParams>): GetAccountParams {
     const message = Object.create(baseGetAccountParams) as GetAccountParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -378,27 +406,39 @@ export const Account = {
   },
   fromJSON(object: any): Account {
     const message = Object.create(baseAccount) as Account;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
+    } else {
+      message.id = 0;
     }
-    if (object.balance) {
+    if (object.balance !== undefined && object.balance !== null) {
       message.balance = Number(object.balance);
+    } else {
+      message.balance = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<Account>): Account {
     const message = Object.create(baseAccount) as Account;
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = 0;
     }
-    if (object.balance) {
+    if (object.balance !== undefined && object.balance !== null) {
       message.balance = object.balance;
+    } else {
+      message.balance = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -434,15 +474,19 @@ export const UpdateAccountVerifiedParams = {
   },
   fromJSON(object: any): UpdateAccountVerifiedParams {
     const message = Object.create(baseUpdateAccountVerifiedParams) as UpdateAccountVerifiedParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<UpdateAccountVerifiedParams>): UpdateAccountVerifiedParams {
     const message = Object.create(baseUpdateAccountVerifiedParams) as UpdateAccountVerifiedParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },

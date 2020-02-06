@@ -31,7 +31,7 @@ export const resolvers: IResolvers = {
                 throw new AuthenticationError("authorization");
             }
             try {
-                const checkout = await checkoutService.CreateAppleIAP(ctx, { iapReceipt: "iap_receipt", productId: 1, userId: userId });
+                const checkout = await checkoutService.UseAppleIAP(ctx, { iapReceipt: "iap_receipt", productId: 1, userId: userId });
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -51,7 +51,7 @@ export const resolvers: IResolvers = {
                 throw new AuthenticationError("authorization");
             }
             try {
-                const checkout = await checkoutService.CreateGiftVoucherOrder(ctx, { productId: 1, userId: userId, giftVoucherId: "gift_voucher_id"});
+                const checkout = await checkoutService.UseGiftVoucher(ctx, { productId: 1, userId: userId, giftVoucherId: "gift_voucher_id"});
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {

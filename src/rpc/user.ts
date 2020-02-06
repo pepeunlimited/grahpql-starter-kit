@@ -166,21 +166,29 @@ export const SetProfilePictureParams = {
   },
   fromJSON(object: any): SetProfilePictureParams {
     const message = Object.create(baseSetProfilePictureParams) as SetProfilePictureParams;
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = Number(object.profilePictureId);
+    } else {
+      message.profilePictureId = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<SetProfilePictureParams>): SetProfilePictureParams {
     const message = Object.create(baseSetProfilePictureParams) as SetProfilePictureParams;
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = object.profilePictureId;
+    } else {
+      message.profilePictureId = 0;
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -215,15 +223,19 @@ export const DeleteProfilePictureParams = {
   },
   fromJSON(object: any): DeleteProfilePictureParams {
     const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<DeleteProfilePictureParams>): DeleteProfilePictureParams {
     const message = Object.create(baseDeleteProfilePictureParams) as DeleteProfilePictureParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -257,15 +269,19 @@ export const ProfilePicture = {
   },
   fromJSON(object: any): ProfilePicture {
     const message = Object.create(baseProfilePicture) as ProfilePicture;
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = Number(object.profilePictureId);
+    } else {
+      message.profilePictureId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<ProfilePicture>): ProfilePicture {
     const message = Object.create(baseProfilePicture) as ProfilePicture;
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = object.profilePictureId;
+    } else {
+      message.profilePictureId = 0;
     }
     return message;
   },
@@ -307,27 +323,39 @@ export const CreateUserParams = {
   },
   fromJSON(object: any): CreateUserParams {
     const message = Object.create(baseCreateUserParams) as CreateUserParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = String(object.password);
+    } else {
+      message.password = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<CreateUserParams>): CreateUserParams {
     const message = Object.create(baseCreateUserParams) as CreateUserParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = object.password;
+    } else {
+      message.password = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
     return message;
   },
@@ -383,44 +411,60 @@ export const User = {
   fromJSON(object: any): User {
     const message = Object.create(baseUser) as User;
     message.roles = [];
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
+    } else {
+      message.id = 0;
     }
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(String(e));
       }
     }
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = Number(object.profilePictureId);
+    } else {
+      message.profilePictureId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<User>): User {
     const message = Object.create(baseUser) as User;
     message.roles = [];
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = 0;
     }
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(e);
       }
     }
-    if (object.profilePictureId) {
+    if (object.profilePictureId !== undefined && object.profilePictureId !== null) {
       message.profilePictureId = object.profilePictureId;
+    } else {
+      message.profilePictureId = 0;
     }
     return message;
   },
@@ -462,15 +506,19 @@ export const GetUserParams = {
   },
   fromJSON(object: any): GetUserParams {
     const message = Object.create(baseGetUserParams) as GetUserParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<GetUserParams>): GetUserParams {
     const message = Object.create(baseGetUserParams) as GetUserParams;
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },

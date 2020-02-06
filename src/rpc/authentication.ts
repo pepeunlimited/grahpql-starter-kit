@@ -146,21 +146,29 @@ export const SignInParams = {
   },
   fromJSON(object: any): SignInParams {
     const message = Object.create(baseSignInParams) as SignInParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = String(object.password);
+    } else {
+      message.password = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<SignInParams>): SignInParams {
     const message = Object.create(baseSignInParams) as SignInParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = object.password;
+    } else {
+      message.password = "";
     }
     return message;
   },
@@ -199,21 +207,29 @@ export const SignInResponse = {
   },
   fromJSON(object: any): SignInResponse {
     const message = Object.create(baseSignInResponse) as SignInResponse;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = String(object.accessToken);
+    } else {
+      message.accessToken = "";
     }
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = String(object.refreshToken);
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<SignInResponse>): SignInResponse {
     const message = Object.create(baseSignInResponse) as SignInResponse;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = object.accessToken;
+    } else {
+      message.accessToken = "";
     }
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = object.refreshToken;
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
@@ -248,15 +264,19 @@ export const RefreshAccessTokenParams = {
   },
   fromJSON(object: any): RefreshAccessTokenParams {
     const message = Object.create(baseRefreshAccessTokenParams) as RefreshAccessTokenParams;
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = String(object.refreshToken);
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<RefreshAccessTokenParams>): RefreshAccessTokenParams {
     const message = Object.create(baseRefreshAccessTokenParams) as RefreshAccessTokenParams;
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = object.refreshToken;
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
@@ -294,21 +314,29 @@ export const RefreshAccessTokenResponse = {
   },
   fromJSON(object: any): RefreshAccessTokenResponse {
     const message = Object.create(baseRefreshAccessTokenResponse) as RefreshAccessTokenResponse;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = String(object.accessToken);
+    } else {
+      message.accessToken = "";
     }
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = String(object.refreshToken);
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<RefreshAccessTokenResponse>): RefreshAccessTokenResponse {
     const message = Object.create(baseRefreshAccessTokenResponse) as RefreshAccessTokenResponse;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = object.accessToken;
+    } else {
+      message.accessToken = "";
     }
-    if (object.refreshToken) {
+    if (object.refreshToken !== undefined && object.refreshToken !== null) {
       message.refreshToken = object.refreshToken;
+    } else {
+      message.refreshToken = "";
     }
     return message;
   },
@@ -343,15 +371,19 @@ export const VerifyAccessTokenParams = {
   },
   fromJSON(object: any): VerifyAccessTokenParams {
     const message = Object.create(baseVerifyAccessTokenParams) as VerifyAccessTokenParams;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = String(object.accessToken);
+    } else {
+      message.accessToken = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<VerifyAccessTokenParams>): VerifyAccessTokenParams {
     const message = Object.create(baseVerifyAccessTokenParams) as VerifyAccessTokenParams;
-    if (object.accessToken) {
+    if (object.accessToken !== undefined && object.accessToken !== null) {
       message.accessToken = object.accessToken;
+    } else {
+      message.accessToken = "";
     }
     return message;
   },
@@ -401,16 +433,22 @@ export const VerifyAccessTokenResponse = {
   fromJSON(object: any): VerifyAccessTokenResponse {
     const message = Object.create(baseVerifyAccessTokenResponse) as VerifyAccessTokenResponse;
     message.roles = [];
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(String(e));
       }
@@ -420,16 +458,22 @@ export const VerifyAccessTokenResponse = {
   fromPartial(object: DeepPartial<VerifyAccessTokenResponse>): VerifyAccessTokenResponse {
     const message = Object.create(baseVerifyAccessTokenResponse) as VerifyAccessTokenResponse;
     message.roles = [];
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(e);
       }

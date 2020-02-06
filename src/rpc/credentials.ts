@@ -170,21 +170,29 @@ export const VerifySignInParams = {
   },
   fromJSON(object: any): VerifySignInParams {
     const message = Object.create(baseVerifySignInParams) as VerifySignInParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = String(object.password);
+    } else {
+      message.password = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<VerifySignInParams>): VerifySignInParams {
     const message = Object.create(baseVerifySignInParams) as VerifySignInParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = object.password;
+    } else {
+      message.password = "";
     }
     return message;
   },
@@ -227,27 +235,39 @@ export const UpdatePasswordParams = {
   },
   fromJSON(object: any): UpdatePasswordParams {
     const message = Object.create(baseUpdatePasswordParams) as UpdatePasswordParams;
-    if (object.currentPassword) {
+    if (object.currentPassword !== undefined && object.currentPassword !== null) {
       message.currentPassword = String(object.currentPassword);
+    } else {
+      message.currentPassword = "";
     }
-    if (object.newPassword) {
+    if (object.newPassword !== undefined && object.newPassword !== null) {
       message.newPassword = String(object.newPassword);
+    } else {
+      message.newPassword = "";
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
+    } else {
+      message.userId = 0;
     }
     return message;
   },
   fromPartial(object: DeepPartial<UpdatePasswordParams>): UpdatePasswordParams {
     const message = Object.create(baseUpdatePasswordParams) as UpdatePasswordParams;
-    if (object.currentPassword) {
+    if (object.currentPassword !== undefined && object.currentPassword !== null) {
       message.currentPassword = object.currentPassword;
+    } else {
+      message.currentPassword = "";
     }
-    if (object.newPassword) {
+    if (object.newPassword !== undefined && object.newPassword !== null) {
       message.newPassword = object.newPassword;
+    } else {
+      message.newPassword = "";
     }
-    if (object.userId) {
+    if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
+    } else {
+      message.userId = 0;
     }
     return message;
   },
@@ -295,27 +315,39 @@ export const ForgotPasswordParams = {
   },
   fromJSON(object: any): ForgotPasswordParams {
     const message = Object.create(baseForgotPasswordParams) as ForgotPasswordParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = undefined;
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = undefined;
     }
-    if (object.language) {
+    if (object.language !== undefined && object.language !== null) {
       message.language = String(object.language);
+    } else {
+      message.language = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<ForgotPasswordParams>): ForgotPasswordParams {
     const message = Object.create(baseForgotPasswordParams) as ForgotPasswordParams;
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = undefined;
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = undefined;
     }
-    if (object.language) {
+    if (object.language !== undefined && object.language !== null) {
       message.language = object.language;
+    } else {
+      message.language = "";
     }
     return message;
   },
@@ -355,21 +387,29 @@ export const ResetPasswordParams = {
   },
   fromJSON(object: any): ResetPasswordParams {
     const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.ticketToken) {
+    if (object.ticketToken !== undefined && object.ticketToken !== null) {
       message.ticketToken = String(object.ticketToken);
+    } else {
+      message.ticketToken = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = String(object.password);
+    } else {
+      message.password = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<ResetPasswordParams>): ResetPasswordParams {
     const message = Object.create(baseResetPasswordParams) as ResetPasswordParams;
-    if (object.ticketToken) {
+    if (object.ticketToken !== undefined && object.ticketToken !== null) {
       message.ticketToken = object.ticketToken;
+    } else {
+      message.ticketToken = "";
     }
-    if (object.password) {
+    if (object.password !== undefined && object.password !== null) {
       message.password = object.password;
+    } else {
+      message.password = "";
     }
     return message;
   },
@@ -404,15 +444,19 @@ export const VerifyPasswordParams = {
   },
   fromJSON(object: any): VerifyPasswordParams {
     const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.ticketToken) {
+    if (object.ticketToken !== undefined && object.ticketToken !== null) {
       message.ticketToken = String(object.ticketToken);
+    } else {
+      message.ticketToken = "";
     }
     return message;
   },
   fromPartial(object: DeepPartial<VerifyPasswordParams>): VerifyPasswordParams {
     const message = Object.create(baseVerifyPasswordParams) as VerifyPasswordParams;
-    if (object.ticketToken) {
+    if (object.ticketToken !== undefined && object.ticketToken !== null) {
       message.ticketToken = object.ticketToken;
+    } else {
+      message.ticketToken = "";
     }
     return message;
   },
@@ -462,16 +506,22 @@ export const VerifySignInResponse = {
   fromJSON(object: any): VerifySignInResponse {
     const message = Object.create(baseVerifySignInResponse) as VerifySignInResponse;
     message.roles = [];
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = Number(object.id);
+    } else {
+      message.id = 0;
     }
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = String(object.username);
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = String(object.email);
+    } else {
+      message.email = "";
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(String(e));
       }
@@ -481,16 +531,22 @@ export const VerifySignInResponse = {
   fromPartial(object: DeepPartial<VerifySignInResponse>): VerifySignInResponse {
     const message = Object.create(baseVerifySignInResponse) as VerifySignInResponse;
     message.roles = [];
-    if (object.id) {
+    if (object.id !== undefined && object.id !== null) {
       message.id = object.id;
+    } else {
+      message.id = 0;
     }
-    if (object.username) {
+    if (object.username !== undefined && object.username !== null) {
       message.username = object.username;
+    } else {
+      message.username = "";
     }
-    if (object.email) {
+    if (object.email !== undefined && object.email !== null) {
       message.email = object.email;
+    } else {
+      message.email = "";
     }
-    if (object.roles) {
+    if (object.roles !== undefined && object.roles !== null) {
       for (const e of object.roles) {
         message.roles.push(e);
       }
