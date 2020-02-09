@@ -18,7 +18,7 @@ Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testin
 - [x] [`users`](https://github.com/pepeunlimited/users)
 - [x] [`authentication-twirp`](https://github.com/pepeunlimited/authentication-twirp)
 - [x] [`files`](https://github.com/pepeunlimited/files)
-- [ ] [`apple-iap`](https://github.com/pepeunlimited/apple-iap)
+- [x] [`apple-iap`](https://github.com/pepeunlimited/apple-iap)
     -   validate IAPs (In-App-Purchases) from AppleStore
 - [ ] [`billing`](https://github.com/pepeunlimited/billing)
     -   the billing service
