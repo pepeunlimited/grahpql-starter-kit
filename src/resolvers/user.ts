@@ -35,8 +35,8 @@ export const typeDef: ITypedef = `
     roles: [String]!
     profilePicture: File
     account: Account!
-    payments: [Payment]
-    orders: [Order]
+    payments(first: Int = 20, offset: Int = 0): [Payment]
+    orders(first: Int = 20, offset: Int = 0): [Order]
   }  
 `;
 
@@ -172,7 +172,7 @@ export const resolvers: IResolvers = {
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-    payments: async (parent, { }, context): Promise<Payment[]> => {
+    payments: async (parent, { first, offset }, context): Promise<Payment[]> => {
       const ctx             = context.ctx as Context;
       const paymentService  = context.models.payment as PaymentService<Context>;
       const user            = parent as User;
@@ -181,7 +181,7 @@ export const resolvers: IResolvers = {
         throw new ForbiddenError("access_denied")
       }
       try {
-        const resp0 = await paymentService.GetPayments(ctx, { userId: userId, pageToken:0, pageSize: 20 });
+        const resp0 = await paymentService.GetPayments(ctx, { userId: userId, pageToken:offset, pageSize: first });
         return resp0.payments;
       } catch (error) {
         if (isTwirpError(error)) {
@@ -192,7 +192,7 @@ export const resolvers: IResolvers = {
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-    orders: async (parent, { }, context): Promise<Order[]> => {
+    orders: async (parent, { first, offset }, context): Promise<Order[]> => {
       const ctx             = context.ctx as Context;
       const orderService    = context.models.order as OrderService<Context>;
       const user            = parent as User;
@@ -201,7 +201,7 @@ export const resolvers: IResolvers = {
         throw new ForbiddenError("access_denied")
       }
       try {
-        const resp0 = await orderService.GetOrders(ctx, { userId: userId, pageToken:0, pageSize: 20 });
+        const resp0 = await orderService.GetOrders(ctx, { userId: userId, pageToken:offset, pageSize: first });
         return resp0.orders;
       } catch (error) {
         if (isTwirpError(error)) {

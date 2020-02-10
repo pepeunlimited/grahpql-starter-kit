@@ -48,10 +48,11 @@ export const resolvers: IResolvers = {
     },
     Account: {
         user: async (parent, _, context): Promise<User> => {
-            const ctx = context.ctx as Context;
-            const userService = context.models.user as UserService<Context>;
+            const ctx             = context.ctx as Context;
+            const userService     = context.models.user as UserService<Context>;
+            const userId          = ctx.userId as number;
             try {
-                const user = await userService.GetUser(ctx, { userId:ctx.userId as number });
+                const user = await userService.GetUser(ctx, { userId:userId });
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {

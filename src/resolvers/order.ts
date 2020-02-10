@@ -7,20 +7,27 @@ import {Checkout, CheckoutService} from "../rpc/checkout";
 import {isNotFound} from "../error/not_found";
 import {isAborted} from "../error/aaborted";
 import {Order, OrderItem, OrderService, OrderTx} from "../rpc/order";
+import {User, UserService} from "../rpc/user";
+import {isPermissionDenied} from "../error/permission_denied";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
   type Order {
     id: ID
+    createdAt: String!
     items: [OrderItem]!
     txs: [OrderTx]!
+    user: User!
   }
   type OrderItem {
     id: ID
+    quantity: Int!
   }
   type OrderTx {
     id: ID
+    createdAt: String!
+    status: String!
   }
 `;
 export const resolvers: IResolvers = {
@@ -55,6 +62,23 @@ export const resolvers: IResolvers = {
             } catch (error) {
                 if (isTwirpError(error)) {
                     isNotFound(error);
+                    isValidationError(error);
+                }
+                console.log(error); // unknown error
+                throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+            }
+        },
+        user: async (parent, _, context): Promise<User> => {
+            const ctx             = context.ctx as Context;
+            const userService     = context.models.user as UserService<Context>;
+            const userId          = ctx.userId as number;
+            try {
+                const user = await userService.GetUser(ctx, { userId:userId });
+                return user;
+            } catch (error) {
+                if (isTwirpError(error)) {
+                    isNotFound(error);
+                    isPermissionDenied(error);
                     isValidationError(error);
                 }
                 console.log(error); // unknown error
