@@ -41,26 +41,6 @@ export const resolvers: IResolvers = {
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        // createGiftVoucherOrder: async (_source, {  }, context): Promise<Checkout> => {
-        //     const ctx = context.ctx as Context;
-        //     const checkoutService = context.models.checkout as CheckoutService<Context>;
-        //     const userId = ctx.userId;
-        //     if (userId == null) {
-        //         throw new AuthenticationError("authorization");
-        //     }
-        //     try {
-        //         const checkout = await checkoutService.UseGiftVoucher(ctx, { productId: 1, userId: userId, giftVoucherId: "gift_voucher_id"});
-        //         return checkout
-        //     } catch (error) {
-        //         if (isTwirpError(error)) {
-        //             isAborted(error);
-        //             isNotFound(error);
-        //             isValidationError(error);
-        //         }
-        //         console.log(error); // unknown error
-        //         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
-        //     }
-        // },
     },
     Checkout: {}
 };
