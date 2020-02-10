@@ -1,5 +1,5 @@
 import { ITypedef, IResolvers, ApolloError } from "apollo-server";
-import { AuthPayload } from "../models/authorization";
+import { AuthPayload } from "../authentication/authpayload";
 import { isTwirpError, Context } from "ts-rpc-client";
 import { UserService, User } from "../rpc/user";
 import { isAccessRefreshError } from "../error/authorization";
