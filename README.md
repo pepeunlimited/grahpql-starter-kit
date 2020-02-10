@@ -20,7 +20,7 @@ Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testin
 - [x] [`files`](https://github.com/pepeunlimited/files)
 - [x] [`apple-iap`](https://github.com/pepeunlimited/apple-iap)
     -   validate IAPs (In-App-Purchases) from AppleStore
-- [ ] [`billing`](https://github.com/pepeunlimited/billing)
+- [x] [`billing`](https://github.com/pepeunlimited/billing)
     -   the billing service
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
