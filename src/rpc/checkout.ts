@@ -2,41 +2,33 @@ import { Reader, Writer } from 'protobufjs/minimal';
 import * as Long from 'long';
 
 
-export interface UseGiftVoucherOrderParams {
-  productId: number;
-  userId: number;
-  giftVoucherId: string;
-}
-
-export interface UseAppleIAPParams {
-  iapReceipt: string;
+export interface CreateCheckoutParams {
+  paymentInstrumentId: number;
   userId: number;
   productId: number;
 }
 
 export interface Checkout {
+  orderId: number;
+  paymentId: number;
+  paymentInstrumentId: number;
 }
 
-const baseUseGiftVoucherOrderParams: object = {
-  productId: 0,
-  userId: 0,
-  giftVoucherId: "",
-};
-
-const baseUseAppleIAPParams: object = {
-  iapReceipt: "",
+const baseCreateCheckoutParams: object = {
+  paymentInstrumentId: 0,
   userId: 0,
   productId: 0,
 };
 
 const baseCheckout: object = {
+  orderId: 0,
+  paymentId: 0,
+  paymentInstrumentId: 0,
 };
 
 export interface CheckoutService<Context extends DataLoaders> {
 
-  UseGiftVoucher(ctx: Context, request: UseGiftVoucherOrderParams): Promise<Checkout>;
-
-  UseAppleIAP(ctx: Context, request: UseAppleIAPParams): Promise<Checkout>;
+  CreateCheckout(ctx: Context, request: CreateCheckoutParams): Promise<Checkout>;
 
 }
 
@@ -48,15 +40,9 @@ export class CheckoutServiceClientImpl<Context extends DataLoaders> implements C
     this.rpc = rpc;
   }
 
-  UseGiftVoucher(ctx: Context, request: UseGiftVoucherOrderParams): Promise<Checkout> {
-    const data = UseGiftVoucherOrderParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.checkout.CheckoutService", "UseGiftVoucher", data);
-    return promise.then(data => Checkout.decode(new Reader(data)));
-  }
-
-  UseAppleIAP(ctx: Context, request: UseAppleIAPParams): Promise<Checkout> {
-    const data = UseAppleIAPParams.encode(request).finish();
-    const promise = this.rpc.request(ctx, "pepeunlimited.checkout.CheckoutService", "UseAppleIAP", data);
+  CreateCheckout(ctx: Context, request: CreateCheckoutParams): Promise<Checkout> {
+    const data = CreateCheckoutParams.encode(request).finish();
+    const promise = this.rpc.request(ctx, "pepeunlimited.checkout.CheckoutService", "CreateCheckout", data);
     return promise.then(data => Checkout.decode(new Reader(data)));
   }
 
@@ -81,102 +67,26 @@ function longToNumber(long: Long) {
   return long.toNumber();
 }
 
-export const UseGiftVoucherOrderParams = {
-  encode(message: UseGiftVoucherOrderParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(8).int64(message.productId);
-    writer.uint32(16).int64(message.userId);
-    writer.uint32(26).string(message.giftVoucherId);
+export const CreateCheckoutParams = {
+  encode(message: CreateCheckoutParams, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).uint32(message.paymentInstrumentId);
+    writer.uint32(24).int64(message.userId);
+    writer.uint32(32).int64(message.productId);
     return writer;
   },
-  decode(reader: Reader, length?: number): UseGiftVoucherOrderParams {
+  decode(reader: Reader, length?: number): CreateCheckoutParams {
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseUseGiftVoucherOrderParams) as UseGiftVoucherOrderParams;
+    const message = Object.create(baseCreateCheckoutParams) as CreateCheckoutParams;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.productId = longToNumber(reader.int64() as Long);
-          break;
-        case 2:
-          message.userId = longToNumber(reader.int64() as Long);
+          message.paymentInstrumentId = reader.uint32();
           break;
         case 3:
-          message.giftVoucherId = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-  fromJSON(object: any): UseGiftVoucherOrderParams {
-    const message = Object.create(baseUseGiftVoucherOrderParams) as UseGiftVoucherOrderParams;
-    if (object.productId !== undefined && object.productId !== null) {
-      message.productId = Number(object.productId);
-    } else {
-      message.productId = 0;
-    }
-    if (object.userId !== undefined && object.userId !== null) {
-      message.userId = Number(object.userId);
-    } else {
-      message.userId = 0;
-    }
-    if (object.giftVoucherId !== undefined && object.giftVoucherId !== null) {
-      message.giftVoucherId = String(object.giftVoucherId);
-    } else {
-      message.giftVoucherId = "";
-    }
-    return message;
-  },
-  fromPartial(object: DeepPartial<UseGiftVoucherOrderParams>): UseGiftVoucherOrderParams {
-    const message = Object.create(baseUseGiftVoucherOrderParams) as UseGiftVoucherOrderParams;
-    if (object.productId !== undefined && object.productId !== null) {
-      message.productId = object.productId;
-    } else {
-      message.productId = 0;
-    }
-    if (object.userId !== undefined && object.userId !== null) {
-      message.userId = object.userId;
-    } else {
-      message.userId = 0;
-    }
-    if (object.giftVoucherId !== undefined && object.giftVoucherId !== null) {
-      message.giftVoucherId = object.giftVoucherId;
-    } else {
-      message.giftVoucherId = "";
-    }
-    return message;
-  },
-  toJSON(message: UseGiftVoucherOrderParams): unknown {
-    const obj: any = {};
-    obj.productId = message.productId || 0;
-    obj.userId = message.userId || 0;
-    obj.giftVoucherId = message.giftVoucherId || "";
-    return obj;
-  },
-};
-
-export const UseAppleIAPParams = {
-  encode(message: UseAppleIAPParams, writer: Writer = Writer.create()): Writer {
-    writer.uint32(10).string(message.iapReceipt);
-    writer.uint32(16).int64(message.userId);
-    writer.uint32(24).int64(message.productId);
-    return writer;
-  },
-  decode(reader: Reader, length?: number): UseAppleIAPParams {
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = Object.create(baseUseAppleIAPParams) as UseAppleIAPParams;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.iapReceipt = reader.string();
-          break;
-        case 2:
           message.userId = longToNumber(reader.int64() as Long);
           break;
-        case 3:
+        case 4:
           message.productId = longToNumber(reader.int64() as Long);
           break;
         default:
@@ -186,12 +96,12 @@ export const UseAppleIAPParams = {
     }
     return message;
   },
-  fromJSON(object: any): UseAppleIAPParams {
-    const message = Object.create(baseUseAppleIAPParams) as UseAppleIAPParams;
-    if (object.iapReceipt !== undefined && object.iapReceipt !== null) {
-      message.iapReceipt = String(object.iapReceipt);
+  fromJSON(object: any): CreateCheckoutParams {
+    const message = Object.create(baseCreateCheckoutParams) as CreateCheckoutParams;
+    if (object.paymentInstrumentId !== undefined && object.paymentInstrumentId !== null) {
+      message.paymentInstrumentId = Number(object.paymentInstrumentId);
     } else {
-      message.iapReceipt = "";
+      message.paymentInstrumentId = 0;
     }
     if (object.userId !== undefined && object.userId !== null) {
       message.userId = Number(object.userId);
@@ -205,12 +115,12 @@ export const UseAppleIAPParams = {
     }
     return message;
   },
-  fromPartial(object: DeepPartial<UseAppleIAPParams>): UseAppleIAPParams {
-    const message = Object.create(baseUseAppleIAPParams) as UseAppleIAPParams;
-    if (object.iapReceipt !== undefined && object.iapReceipt !== null) {
-      message.iapReceipt = object.iapReceipt;
+  fromPartial(object: DeepPartial<CreateCheckoutParams>): CreateCheckoutParams {
+    const message = Object.create(baseCreateCheckoutParams) as CreateCheckoutParams;
+    if (object.paymentInstrumentId !== undefined && object.paymentInstrumentId !== null) {
+      message.paymentInstrumentId = object.paymentInstrumentId;
     } else {
-      message.iapReceipt = "";
+      message.paymentInstrumentId = 0;
     }
     if (object.userId !== undefined && object.userId !== null) {
       message.userId = object.userId;
@@ -224,9 +134,9 @@ export const UseAppleIAPParams = {
     }
     return message;
   },
-  toJSON(message: UseAppleIAPParams): unknown {
+  toJSON(message: CreateCheckoutParams): unknown {
     const obj: any = {};
-    obj.iapReceipt = message.iapReceipt || "";
+    obj.paymentInstrumentId = message.paymentInstrumentId || 0;
     obj.userId = message.userId || 0;
     obj.productId = message.productId || 0;
     return obj;
@@ -235,6 +145,9 @@ export const UseAppleIAPParams = {
 
 export const Checkout = {
   encode(message: Checkout, writer: Writer = Writer.create()): Writer {
+    writer.uint32(8).int64(message.orderId);
+    writer.uint32(16).int64(message.paymentId);
+    writer.uint32(24).uint32(message.paymentInstrumentId);
     return writer;
   },
   decode(reader: Reader, length?: number): Checkout {
@@ -243,6 +156,15 @@ export const Checkout = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.orderId = longToNumber(reader.int64() as Long);
+          break;
+        case 2:
+          message.paymentId = longToNumber(reader.int64() as Long);
+          break;
+        case 3:
+          message.paymentInstrumentId = reader.uint32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -252,14 +174,47 @@ export const Checkout = {
   },
   fromJSON(object: any): Checkout {
     const message = Object.create(baseCheckout) as Checkout;
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = Number(object.orderId);
+    } else {
+      message.orderId = 0;
+    }
+    if (object.paymentId !== undefined && object.paymentId !== null) {
+      message.paymentId = Number(object.paymentId);
+    } else {
+      message.paymentId = 0;
+    }
+    if (object.paymentInstrumentId !== undefined && object.paymentInstrumentId !== null) {
+      message.paymentInstrumentId = Number(object.paymentInstrumentId);
+    } else {
+      message.paymentInstrumentId = 0;
+    }
     return message;
   },
   fromPartial(object: DeepPartial<Checkout>): Checkout {
     const message = Object.create(baseCheckout) as Checkout;
+    if (object.orderId !== undefined && object.orderId !== null) {
+      message.orderId = object.orderId;
+    } else {
+      message.orderId = 0;
+    }
+    if (object.paymentId !== undefined && object.paymentId !== null) {
+      message.paymentId = object.paymentId;
+    } else {
+      message.paymentId = 0;
+    }
+    if (object.paymentInstrumentId !== undefined && object.paymentInstrumentId !== null) {
+      message.paymentInstrumentId = object.paymentInstrumentId;
+    } else {
+      message.paymentInstrumentId = 0;
+    }
     return message;
   },
   toJSON(message: Checkout): unknown {
     const obj: any = {};
+    obj.orderId = message.orderId || 0;
+    obj.paymentId = message.paymentId || 0;
+    obj.paymentInstrumentId = message.paymentInstrumentId || 0;
     return obj;
   },
 };

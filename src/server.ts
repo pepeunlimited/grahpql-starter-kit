@@ -8,6 +8,8 @@ import {AuthenticationServiceClientImpl} from "./rpc/authentication";
 import {AccountServiceClientImpl} from "./rpc/account";
 import {CheckoutServiceClientImpl} from "./rpc/checkout";
 import {FilesServiceClientImpl} from "./rpc/files";
+import {OrderServiceClientImpl} from "./rpc/order";
+import {PaymentServiceClientImpl} from "./rpc/payment";
 
 const server = new ApolloServer({
   schema,
@@ -26,10 +28,12 @@ const server = new ApolloServer({
     const credentials     = new CredentialsServiceClientImpl<Context>(rpc);
     const accounts        = new AccountServiceClientImpl<Context>(rpc);
     const checkout        = new CheckoutServiceClientImpl<Context>(rpc);
+    const order           = new OrderServiceClientImpl<Context>(rpc);
+    const payment         = new PaymentServiceClientImpl<Context>(rpc);
 
     ctx.userId = await getUserID(authorization, authentication, ctx);
 
-    return {models: {user, authentication, files, credentials, accounts, checkout}, ctx: ctx};
+    return {models: {user, authentication, files, credentials, accounts, checkout, order, payment}, ctx: ctx};
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground

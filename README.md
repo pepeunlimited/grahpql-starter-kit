@@ -22,8 +22,6 @@ Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testin
     -   validate IAPs (In-App-Purchases) from AppleStore
 - [ ] [`billing`](https://github.com/pepeunlimited/billing)
     -   the billing service
-- [ ] [`i18n`](https://github.com/pepeunlimited/i18n)
-    -   i18n service which handles translation for the items    
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
 - [ ] [`products`](https://github.com/pepeunlimited/products)

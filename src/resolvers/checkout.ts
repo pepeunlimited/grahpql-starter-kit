@@ -11,10 +11,8 @@ import {isAborted} from "../error/aaborted";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
-    # create Apple's IAP purchase flow
-    createAppleIAP: Checkout!
-    
-    createGiftVoucherOrder: Checkout!
+    # create checkout based on payment instrument
+    createCheckout(paymentInstrumentId: Int!): Checkout!
   }
   type Checkout {
     id: ID
@@ -23,7 +21,7 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
     Query: {},
     Mutation: {
-        createAppleIAP: async (_source, {  }, context): Promise<Checkout> => {
+        createCheckout: async (_source, { paymentInstrumentId }, context): Promise<Checkout> => {
             const ctx = context.ctx as Context;
             const checkoutService = context.models.checkout as CheckoutService<Context>;
             const userId = ctx.userId;
@@ -31,7 +29,7 @@ export const resolvers: IResolvers = {
                 throw new AuthenticationError("authorization");
             }
             try {
-                const checkout = await checkoutService.UseAppleIAP(ctx, { iapReceipt: "iap_receipt", productId: 1, userId: userId });
+                const checkout = await checkoutService.CreateCheckout(ctx, { paymentInstrumentId: paymentInstrumentId, productId: 1, userId: userId });
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -43,26 +41,26 @@ export const resolvers: IResolvers = {
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        createGiftVoucherOrder: async (_source, {  }, context): Promise<Checkout> => {
-            const ctx = context.ctx as Context;
-            const checkoutService = context.models.checkout as CheckoutService<Context>;
-            const userId = ctx.userId;
-            if (userId == null) {
-                throw new AuthenticationError("authorization");
-            }
-            try {
-                const checkout = await checkoutService.UseGiftVoucher(ctx, { productId: 1, userId: userId, giftVoucherId: "gift_voucher_id"});
-                return checkout
-            } catch (error) {
-                if (isTwirpError(error)) {
-                    isAborted(error);
-                    isNotFound(error);
-                    isValidationError(error);
-                }
-                console.log(error); // unknown error
-                throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
-            }
-        },
+        // createGiftVoucherOrder: async (_source, {  }, context): Promise<Checkout> => {
+        //     const ctx = context.ctx as Context;
+        //     const checkoutService = context.models.checkout as CheckoutService<Context>;
+        //     const userId = ctx.userId;
+        //     if (userId == null) {
+        //         throw new AuthenticationError("authorization");
+        //     }
+        //     try {
+        //         const checkout = await checkoutService.UseGiftVoucher(ctx, { productId: 1, userId: userId, giftVoucherId: "gift_voucher_id"});
+        //         return checkout
+        //     } catch (error) {
+        //         if (isTwirpError(error)) {
+        //             isAborted(error);
+        //             isNotFound(error);
+        //             isValidationError(error);
+        //         }
+        //         console.log(error); // unknown error
+        //         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+        //     }
+        // },
     },
     Checkout: {}
 };
