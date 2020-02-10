@@ -64,11 +64,12 @@ export const resolvers: IResolvers = {
     me: async (_, { }, context): Promise<User> => {
       const ctx         = context.ctx as Context;
       const userService = context.models.user as UserService<Context>;
-      if (ctx.userId == null) {
+      const userId = ctx.userId;
+      if (userId == null) {
         throw new AuthenticationError("authorization")
       }
       try {
-        const user = await userService.GetUser(ctx, {userId: ctx.userId as number});
+        const user = await userService.GetUser(ctx, {userId: userId });
         return user;
       } catch (error) {
         if (isTwirpError(error)) {

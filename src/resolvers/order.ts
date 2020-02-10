@@ -1,12 +1,10 @@
 import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
-import { ApolloError, AuthenticationError } from "apollo-server";
+import { ApolloError } from "apollo-server";
 import { Context } from "ts-rpc-client";
 import { isValidationError } from "../error/validation";
-import {Checkout, CheckoutService} from "../rpc/checkout";
 import {isNotFound} from "../error/not_found";
-import {isAborted} from "../error/aaborted";
-import {Order, OrderItem, OrderService, OrderTx} from "../rpc/order";
+import {OrderItem, OrderService, OrderTx} from "../rpc/order";
 import {User, UserService} from "../rpc/user";
 import {isPermissionDenied} from "../error/permission_denied";
 
