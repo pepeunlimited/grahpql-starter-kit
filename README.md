@@ -24,7 +24,7 @@ Implemented iOS [`client`](https://github.com/pepeunlimited/demo) for the testin
     -   the billing service
 - [ ] [`checkout`](https://github.com/pepeunlimited/checkout)
     -   orchestrates the purchases flow. validate, mark product as bought and etc.. 
-- [ ] [`pricing`](https://github.com/pepeunlimited/pricing)
+- [ ] [`prices`](https://github.com/pepeunlimited/prices)
 - [x] [`accounts`](https://github.com/pepeunlimited/accounts)
     -   service which holds the user's account (balance and etc..).  
 #### Misc:
