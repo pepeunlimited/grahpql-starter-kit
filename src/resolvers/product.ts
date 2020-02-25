@@ -9,6 +9,9 @@ import {throwsAlreadyExist} from "../error/already_exist";
 import {Product, ProductService} from "../rpc/product";
 import {Price, PriceService} from "../rpc/price";
 
+// union & interfaces:
+// https://www.apollographql.com/docs/apollo-server/schema/unions-interfaces/
+
 export const typeDef: ITypedef = `
   extend type Query {
     # product by id

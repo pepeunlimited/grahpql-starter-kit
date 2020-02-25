@@ -63,6 +63,7 @@ export interface OrderItem {
   priceId: number;
   quantity: number;
   orderId: number;
+  planId: number;
 }
 
 export interface GetOrderItemsResponse {
@@ -128,6 +129,7 @@ const baseOrderItem: object = {
   priceId: 0,
   quantity: 0,
   orderId: 0,
+  planId: 0,
 };
 
 const baseGetOrderItemsResponse: object = {
@@ -962,6 +964,7 @@ export const OrderItem = {
     writer.uint32(16).int64(message.priceId);
     writer.uint32(24).uint32(message.quantity);
     writer.uint32(32).int64(message.orderId);
+    writer.uint32(40).int64(message.planId);
     return writer;
   },
   decode(reader: Reader, length?: number): OrderItem {
@@ -981,6 +984,9 @@ export const OrderItem = {
           break;
         case 4:
           message.orderId = longToNumber(reader.int64() as Long);
+          break;
+        case 5:
+          message.planId = longToNumber(reader.int64() as Long);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1011,6 +1017,11 @@ export const OrderItem = {
     } else {
       message.orderId = 0;
     }
+    if (object.planId !== undefined && object.planId !== null) {
+      message.planId = Number(object.planId);
+    } else {
+      message.planId = 0;
+    }
     return message;
   },
   fromPartial(object: DeepPartial<OrderItem>): OrderItem {
@@ -1035,6 +1046,11 @@ export const OrderItem = {
     } else {
       message.orderId = 0;
     }
+    if (object.planId !== undefined && object.planId !== null) {
+      message.planId = object.planId;
+    } else {
+      message.planId = 0;
+    }
     return message;
   },
   toJSON(message: OrderItem): unknown {
@@ -1043,6 +1059,7 @@ export const OrderItem = {
     obj.priceId = message.priceId || 0;
     obj.quantity = message.quantity || 0;
     obj.orderId = message.orderId || 0;
+    obj.planId = message.planId || 0;
     return obj;
   },
 };
