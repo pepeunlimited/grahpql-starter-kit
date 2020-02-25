@@ -6,6 +6,7 @@ import {throwsValidationError} from "../error/validation";
 import {CredentialsService} from "../rpc/credentials";
 import {throwsNotFound} from "../error/not_found";
 import {throwsPermissionDenied} from "../error/permission_denied";
+import {AuthenticationService} from "../rpc/authentication";
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
@@ -23,15 +24,13 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
     Query: {},
     Mutation: {
-        updatePassword: async (_source, { currentPassword, newPassword }, context): Promise<Boolean> => {
-            const ctx = context.ctx as Context;
-            const credentials = context.models.credentials as CredentialsService<Context>;
-            const userId = ctx.userId;
+        updatePassword: async (_source, { currentPassword, newPassword }, context: { ctx: Context, service: { credentials: CredentialsService<Context> } }): Promise<Boolean> => {
+            const userId = context.ctx.userId;
             if (userId == null) {
                 throw new AuthenticationError("authorization");
             }
             try {
-                await credentials.UpdatePassword(ctx, { currentPassword: currentPassword, newPassword: newPassword, userId: userId as number });
+                await context.service.credentials.UpdatePassword(context.ctx, { currentPassword: currentPassword, newPassword: newPassword, userId: userId as number });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -39,16 +38,14 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        forgotPassword: async (_source, { username, email }, context): Promise<Boolean> => {
-            const ctx = context.ctx as Context;
-            const credentials = context.models.credentials as CredentialsService<Context>;
+        forgotPassword: async (_source, { username, email }, context: { ctx: Context, service: { credentials: CredentialsService<Context> } }): Promise<Boolean> => {
             try {
                 const language = "en" as string;
-                await credentials.ForgotPassword(ctx, { username, email, language });
+                await context.service.credentials.ForgotPassword(context.ctx, { username, email, language });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -56,15 +53,13 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        verifyPasswordReset: async (_source, { ticketToken }, context): Promise<Boolean> => {
-            const ctx = context.ctx as Context;
-            const credentials = context.models.credentials as CredentialsService<Context>;
+        verifyPasswordReset: async (_source, { ticketToken }, context: { ctx: Context, service: { credentials: CredentialsService<Context> } }): Promise<Boolean> => {
             try {
-                await credentials.VerifyResetPassword(ctx, { ticketToken });
+                await context.service.credentials.VerifyResetPassword(context.ctx, { ticketToken });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -72,15 +67,13 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        resetPassword: async (_source, { ticketToken, password }, context): Promise<Boolean> => {
-            const ctx = context.ctx as Context;
-            const credentials = context.models.credentials as CredentialsService<Context>;
+        resetPassword: async (_source, { ticketToken, password }, context: { ctx: Context, service: { credentials: CredentialsService<Context> } }): Promise<Boolean> => {
             try {
-                await credentials.ResetPassword(ctx, { ticketToken, password });
+                await context.service.credentials.ResetPassword(context.ctx, { ticketToken, password });
                 return true
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -88,7 +81,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },

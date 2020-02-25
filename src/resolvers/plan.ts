@@ -7,6 +7,7 @@ import {throwsValidationError} from "../error/validation";
 import {ApolloError} from "apollo-server";
 import {Price, PriceService} from "../rpc/price";
 import {Plan, PlanService} from "../rpc/plan";
+import {PaymentService} from "../rpc/payment";
 
 export const typeDef: ITypedef = `
   extend type Query {
@@ -23,11 +24,9 @@ export const typeDef: ITypedef = `
 
 export const resolvers: IResolvers = {
     Query: {
-        plan: async (_, { id }, context): Promise<Plan> => {
-            const ctx             = context.ctx as Context;
-            const planService  = context.models.plan as PlanService<Context>;
+        plan: async (_, { id }, context: { ctx: Context, service: { plan: PlanService<Context> }}): Promise<Plan> => {
             try {
-                const plan = await planService.GetPlan(ctx, {planId: id});
+                const plan = await context.service.plan.GetPlan(context.ctx, {planId: id});
                 return plan
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -35,7 +34,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },

@@ -12,7 +12,7 @@ import {throwsAborted} from "../error/aaborted";
 export const typeDef: ITypedef = `
   extend type Mutation {
     # create checkout based on payment instrument
-    createCheckout(paymentInstrumentId: Int!): Checkout!
+    createCheckout(paymentInstrumentId: Int!, productId: Int!): Checkout!
   }
   type Checkout {
     id: ID
@@ -21,15 +21,13 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
     Query: {},
     Mutation: {
-        createCheckout: async (_source, { paymentInstrumentId }, context): Promise<Checkout> => {
-            const ctx = context.ctx as Context;
-            const checkoutService = context.models.checkout as CheckoutService<Context>;
-            const userId = ctx.userId;
+        createCheckout: async (_source, { paymentInstrumentId, productId }, context: { ctx: Context, service: { checkout: CheckoutService<Context> } }): Promise<Checkout> => {
+            const userId = context.ctx.userId;
             if (userId == null) {
                 throw new AuthenticationError("authorization");
             }
             try {
-                const checkout = await checkoutService.CreateCheckout(ctx, { paymentInstrumentId: paymentInstrumentId, productId: 1, userId: userId });
+                const checkout = await context.service.checkout.CreateCheckout(context.ctx, { paymentInstrumentId: paymentInstrumentId, productId: productId, userId: userId });
                 return checkout
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -37,7 +35,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },

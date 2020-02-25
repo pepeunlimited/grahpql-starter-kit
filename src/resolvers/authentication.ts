@@ -23,11 +23,9 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
   Query: {},
   Mutation: {
-    signIn: async (_source, { username, password }, context): Promise<AuthPayload> => {
-      const ctx = context.ctx as Context;
-      const authenticationService = context.models.authentication as AuthenticationService<Context>;
+    signIn: async (_source, { username, password }, context: { ctx: Context, service: { authentication: AuthenticationService<Context> } }): Promise<AuthPayload> => {
       try {
-        const auth = await authenticationService.SignIn(ctx, { username: username, password: password });
+        const auth = await context.service.authentication.SignIn(context.ctx, { username: username, password: password });
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
@@ -35,15 +33,13 @@ export const resolvers: IResolvers = {
           throwsNotFound(error);
           throwsValidationError(error);
         }
-        console.log(error); // unknown error
+        console.log(error);
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-    refreshAccessToken: async (_source, { refreshToken }, context): Promise<AuthPayload> => {
-      const ctx = context.ctx as Context;
-      const authenticationService = context.models.authentication as AuthenticationService<Context>;
+    refreshAccessToken: async (_source, { refreshToken }, context: { ctx: Context, service: { authentication: AuthenticationService<Context> } }): Promise<AuthPayload> => {
       try {
-        const auth = await authenticationService.RefreshAccessToken(ctx, { refreshToken });
+        const auth = await context.service.authentication.RefreshAccessToken(context.ctx, { refreshToken });
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
@@ -52,21 +48,18 @@ export const resolvers: IResolvers = {
           throwsNotFound(error);
           throwsValidationError(error);
         }
-        console.log(error); // unknown error
+        console.log(error);
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
   },
   AuthPayload: {
-    me: async (parent, _, context): Promise<User> => {
-      const ctx = context.ctx as Context;
-      const userService = context.models.user as UserService<Context>;
-      const authenticationService = context.models.authentication as AuthenticationService<Context>;
+    me: async (parent, _, context: { ctx: Context, service: { user: UserService<Context>, authentication: AuthenticationService<Context> }}): Promise<User> => {
       try {
         const authPayload = parent as AuthPayload;
-        const verify = await authenticationService.VerifyAccessToken(ctx, { accessToken: authPayload.accessToken});
-        const user = await userService.GetUser(ctx, { userId: verify.userId });
-        ctx.userId = user.id; // do not remove
+        const verify = await context.service.authentication.VerifyAccessToken(context.ctx, { accessToken: authPayload.accessToken});
+        const user = await context.service.user.GetUser(context.ctx, { userId: verify.userId });
+        context.ctx.userId = user.id; // DO NOT REMOVE
         return user
       } catch (error) {
         if (isTwirpError(error)) {
@@ -75,7 +68,7 @@ export const resolvers: IResolvers = {
           throwsNotFound(error);
           throwsValidationError(error);
         }
-        console.log(error); // unknown error
+        console.log(error);
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     }

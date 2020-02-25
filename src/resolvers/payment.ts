@@ -4,12 +4,10 @@ import {ApolloError, AuthenticationError, UserInputError} from "apollo-server";
 import { Context } from "ts-rpc-client";
 import { throwsValidationError } from "../error/validation";
 import {throwsNotFound} from "../error/not_found";
-import {PaymentInstrument, PaymentService} from "../rpc/payment";
+import {Payment, PaymentInstrument, PaymentService} from "../rpc/payment";
 import {User, UserService} from "../rpc/user";
 import {Order, OrderService} from "../rpc/order";
 import {throwsPermissionDenied} from "../error/permission_denied";
-
-// https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
   extend type Query {
@@ -34,68 +32,60 @@ export const typeDef: ITypedef = `
 `;
 export const resolvers: IResolvers = {
     Query: {
-        paymentInstrument: async (_, { id, type }, context): Promise<PaymentInstrument> => {
-            const ctx             = context.ctx as Context;
-            const paymentService     = context.models.payment as PaymentService<Context>;
-            const userId = ctx.userId;
+        paymentInstrument: async (_, { id, type }, context: { ctx: Context, service: { payment: PaymentService<Context> }}): Promise<PaymentInstrument> => {
+            const userId = context.ctx.userId;
             if (userId == null) {
                 throw new AuthenticationError("authorization")
             }
             try {
-                const pi = await paymentService.GetPaymentInstrument(ctx, { id: id, type: type });
-                return pi;
+                const paymentInstrument = await context.service.payment.GetPaymentInstrument(context.ctx, { id: id, type: type });
+                return paymentInstrument;
             } catch (error) {
                 if (isTwirpError(error)) {
                     throwsPermissionDenied(error);
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
     },
     Mutation: {},
     Payment: {
-        order: async (parent, { }, context): Promise<Order> => {
-            const ctx             = context.ctx as Context;
-            const orderService    = context.models.order as OrderService<Context>;
-            const userId          = ctx.userId as number;
-            const orderId         = parent.orderId as number;
+        order: async (parent: Payment, { }, context: { ctx: Context, service: { order: OrderService<Context> } }): Promise<Order> => {
+            const userId          = context.ctx.userId as number;
+            const orderId         = parent.orderId;
             try {
-                const order = await orderService.GetOrder(ctx, { userId: userId, orderId: orderId });
+                const order = await context.service.order.GetOrder(context.ctx, { userId: userId, orderId: orderId });
                 return order;
             } catch (error) {
                 if (isTwirpError(error)) {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        instrument: async (parent, { }, context): Promise<PaymentInstrument> => {
-            const ctx                   = context.ctx as Context;
-            const paymentService        = context.models.payment as PaymentService<Context>;
-            const paymentInstrumentId   = parent.paymentInstrumentId as number;
+        instrument: async (parent: Payment, { }, context: { ctx: Context, service: { payment: PaymentService<Context> } }): Promise<PaymentInstrument> => {
+            const paymentInstrumentId = parent.paymentInstrumentId;
             try {
-                const instrument = await paymentService.GetPaymentInstrument(ctx, { id: paymentInstrumentId, type: "" });
+                const instrument = await context.service.payment.GetPaymentInstrument(context.ctx, { id: paymentInstrumentId, type: "" });
                 return instrument;
             } catch (error) {
                 if (isTwirpError(error)) {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        user: async (parent, _, context): Promise<User> => {
-            const ctx             = context.ctx as Context;
-            const userService     = context.models.user as UserService<Context>;
-            const userId          = ctx.userId as number;
+        user: async (parent: Payment, _, context: { ctx: Context, service: { user: UserService<Context> } }): Promise<User> => {
+            const userId = context.ctx.userId as number;
             try {
-                const user = await userService.GetUser(ctx, { userId:userId });
+                const user = await context.service.user.GetUser(context.ctx, { userId:userId });
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -103,7 +93,7 @@ export const resolvers: IResolvers = {
                     throwsPermissionDenied(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },

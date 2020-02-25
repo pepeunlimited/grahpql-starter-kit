@@ -9,8 +9,6 @@ import {throwsNotFound} from "../error/not_found";
 import {throwsPermissionDenied} from "../error/permission_denied";
 import {throwsAborted} from "../error/aaborted";
 
-// https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
-
 export const typeDef: ITypedef = `
   extend type Mutation {
     # creates deposit to the account
@@ -25,15 +23,13 @@ export const typeDef: ITypedef = `
 export const resolvers: IResolvers = {
     Query: {},
     Mutation: {
-        withdraw: async (_source, { amount }, context): Promise<Account> => {
-            const ctx = context.ctx as Context;
-            const accountService = context.models.accounts as AccountService<Context>;
-            const userId = ctx.userId;
+        withdraw: async (_source, { amount }, context: { ctx: Context, service: { account: AccountService<Context> } }): Promise<Account> => {
+            const userId = context.ctx.userId;
             if (userId == null) {
                 throw new AuthenticationError("authorization");
             }
             try {
-                const account = await accountService.CreateWithdraw(ctx, { amount: amount, userId: userId  });
+                const account = await context.service.account.CreateWithdraw(context.ctx, { amount: amount, userId: userId  });
                 return account
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -41,18 +37,16 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
     },
     Account: {
-        user: async (parent, _, context): Promise<User> => {
-            const ctx             = context.ctx as Context;
-            const userService     = context.models.user as UserService<Context>;
-            const userId          = ctx.userId as number;
+        user: async (parent: Account, _, context: { ctx: Context, service: { user: UserService<Context> } }): Promise<User> => {
+            const userId = context.ctx.userId as number;
             try {
-                const user = await userService.GetUser(ctx, { userId:userId });
+                const user = await context.service.user.GetUser(context.ctx, { userId:userId });
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -60,7 +54,7 @@ export const resolvers: IResolvers = {
                     throwsPermissionDenied(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         }

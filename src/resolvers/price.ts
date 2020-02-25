@@ -6,6 +6,7 @@ import {throwsNotFound} from "../error/not_found";
 import {throwsValidationError} from "../error/validation";
 import {ApolloError} from "apollo-server";
 import {Price, PriceService} from "../rpc/price";
+import {PlanService} from "../rpc/plan";
 
 export const typeDef: ITypedef = `
   extend type Query {
@@ -22,11 +23,9 @@ export const typeDef: ITypedef = `
 
 export const resolvers: IResolvers = {
     Query: {
-        price: async (_, { id }, context): Promise<Price> => {
-            const ctx             = context.ctx as Context;
-            const priceService  = context.models.product as PriceService<Context>;
+        price: async (_, { id }, context: { ctx: Context, service: { price: PriceService<Context> }}): Promise<Price> => {
             try {
-                const price = await priceService.GetPrice(ctx, { productId: 0, priceId: id, productSku: "" });
+                const price = await context.service.price.GetPrice(context.ctx, { productId: 0, priceId: id, productSku: "" });
                 return price;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -34,7 +33,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
@@ -43,7 +42,7 @@ export const resolvers: IResolvers = {
     Price: {
         product: async (parent, args, context): Promise<Product> => {
             const ctx             = context.ctx as Context;
-            const productService  = context.models.product as ProductService<Context>;
+            const productService  = context.service.product as ProductService<Context>;
             const productId         = parent.productId as number;
             try {
                 const product = await productService.GetProduct(ctx, { productId: productId, sku: "" });

@@ -56,46 +56,40 @@ export const resolvers: IResolvers = {
     Query: {},
     Mutation: {},
     Order: {
-        items: async (parent: Order, { }, context): Promise<OrderItem[]> => {
-            const ctx             = context.ctx as Context;
-            const orderService    = context.models.order as OrderService<Context>;
-            const userId          = ctx.userId as number;
-            const orderId         = parent.id;
+        items: async (parent: Order, { }, context: { ctx: Context, service: { order: OrderService<Context> }}): Promise<OrderItem[]> => {
+            const userId  = context.ctx.userId as number;
+            const orderId = parent.id;
             try {
-                const items = await orderService.GetOrderItems(ctx, { userId: userId, orderId: orderId });
+                const items = await context.service.order.GetOrderItems(context.ctx, { userId: userId, orderId: orderId });
                 return items.orderItems;
             } catch (error) {
                 if (isTwirpError(error)) {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        txs: async (parent: Order, { }, context): Promise<OrderTx[]> => {
-            const ctx             = context.ctx as Context;
-            const orderService    = context.models.order as OrderService<Context>;
-            const userId          = ctx.userId as number;
-            const orderId         = parent.id;
+        txs: async (parent: Order, { }, context: { ctx: Context, service: { order: OrderService<Context> }}): Promise<OrderTx[]> => {
+            const userId  = context.ctx.userId as number;
+            const orderId = parent.id;
             try {
-                const txs = await orderService.GetOrderTxs(ctx, { userId: userId, orderId: orderId });
+                const txs = await context.service.order.GetOrderTxs(context.ctx, { userId: userId, orderId: orderId });
                 return txs.orderTxs;
             } catch (error) {
                 if (isTwirpError(error)) {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
-        user: async (parent: User, _, context): Promise<User> => {
-            const ctx             = context.ctx as Context;
-            const userService     = context.models.user as UserService<Context>;
-            const userId          = ctx.userId as number;
+        user: async (parent: Order, _, context: { ctx: Context, service: { user: UserService<Context> } }): Promise<User> => {
+            const userId = context.ctx.userId as number;
             try {
-                const user = await userService.GetUser(ctx, { userId:userId });
+                const user = await context.service.user.GetUser(context.ctx, { userId: userId });
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -103,18 +97,16 @@ export const resolvers: IResolvers = {
                     throwsPermissionDenied(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
     },
     PriceOrderItem: {
-        price: async (parent: OrderItem, _, context): Promise<Price> => {
-            const ctx           = context.ctx as Context;
-            const priceService  = context.models.price as PriceService<Context>;
-            const priceId       = parent.priceId;
+        price: async (parent: OrderItem, _, context: { ctx: Context, service: { price: PriceService<Context> }}): Promise<Price> => {
+            const priceId = parent.priceId;
             try {
-                const price = await priceService.GetPrice(ctx, { productId: 0, priceId: priceId, productSku: "" });
+                const price = await context.service.price.GetPrice(context.ctx, { productId: 0, priceId: priceId, productSku: "" });
                 return price;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -122,18 +114,16 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },
     },
     PlanOrderItem: {
-        plan: async (parent: OrderItem, _, context: { ctx: Context, models: { plan: PlanService<Context> } }): Promise<Plan> => {
-            const ctx           = context.ctx;
-            const planService  = context.models.plan;
-            const planId       = parent.planId;
+        plan: async (parent: OrderItem, _, context: { ctx: Context, service: { plan: PlanService<Context> } }): Promise<Plan> => {
+            const planId = parent.planId;
             try {
-                const plan = await planService.GetPlan(ctx, { planId: planId });
+                const plan = await context.service.plan.GetPlan(context.ctx, { planId: planId });
                 return plan;
             } catch (error) {
                 if (isTwirpError(error)) {
@@ -141,7 +131,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         },

@@ -43,7 +43,7 @@ const server = new ApolloServer({
 
     ctx.userId = await getUserID(authorization, authentication, ctx);
 
-    return {models: {user, authentication, files, credentials, accounts, checkout, order, payment, price, product, plan, subscription, thirdpartyprice}, ctx: ctx};
+    return {service: {user, authentication, files, credentials, accounts, checkout, order, payment, price, product, plan, subscription, thirdpartyprice}, ctx: ctx};
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground

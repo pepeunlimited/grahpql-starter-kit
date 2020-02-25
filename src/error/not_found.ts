@@ -8,7 +8,7 @@ export function throwsNotFound(error: TwirpError) {
     }
 }
 
-export function isFotFound(error: any): boolean {
+export function isNotFound(error: any): boolean {
     if (!isTwirpError(error)) {
          return false
     }
