@@ -3,13 +3,13 @@ import {User, UserService} from '../rpc/user';
 import {isTwirpError} from 'ts-rpc-client';
 import {ApolloError, AuthenticationError, ForbiddenError, UserInputError} from "apollo-server";
 import {Context} from "ts-rpc-client";
-import {isValidationError} from "../error/validation";
+import {throwsValidationError} from "../error/validation";
 import {Account, AccountService} from "../rpc/account";
 import {isForbiddenError} from "../error/forbidden_error";
 import {FilesService, File} from "../rpc/files";
-import {isAlreadyExist} from "../error/already_exist";
-import {isPermissionDenied} from "../error/permission_denied";
-import {isNotFound} from "../error/not_found";
+import {throwsAlreadyExist} from "../error/already_exist";
+import {throwsPermissionDenied} from "../error/permission_denied";
+import {throwsNotFound} from "../error/not_found";
 import {Payment, PaymentService} from "../rpc/payment";
 import {Order, OrderService} from "../rpc/order";
 
@@ -37,7 +37,7 @@ export const typeDef: ITypedef = `
     account: Account!
     payments(first: Int = 20, offset: Int = 0): [Payment]
     orders(first: Int = 20, offset: Int = 0): [Order]
-  }  
+  }
 `;
 
 export const resolvers: IResolvers = {
@@ -53,9 +53,9 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isPermissionDenied(error);
-          isNotFound(error);
-          isValidationError(error);
+          throwsPermissionDenied(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -73,9 +73,9 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isPermissionDenied(error);
-          isNotFound(error);
-          isValidationError(error);
+          throwsPermissionDenied(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -96,8 +96,8 @@ export const resolvers: IResolvers = {
         return user;
       } catch (error) {
         if (isTwirpError(error)) {
-          isAlreadyExist(error);
-          isValidationError(error);
+          throwsAlreadyExist(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -121,9 +121,9 @@ export const resolvers: IResolvers = {
         return true
       } catch (error) {
         if (isTwirpError(error)) {
-          isNotFound(error);
-          isPermissionDenied(error);
-          isValidationError(error);
+          throwsNotFound(error);
+          throwsPermissionDenied(error);
+          throwsValidationError(error);
         }
         if (isForbiddenError(error)) {
           throw new ForbiddenError("access_denied")
@@ -146,8 +146,8 @@ export const resolvers: IResolvers = {
         return file;
       } catch (error) {
         if (isTwirpError(error)) {
-          isNotFound(error);
-          isValidationError(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -166,8 +166,8 @@ export const resolvers: IResolvers = {
         return account;
       } catch (error) {
         if (isTwirpError(error)) {
-          isNotFound(error);
-          isValidationError(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -186,8 +186,8 @@ export const resolvers: IResolvers = {
         return resp0.payments;
       } catch (error) {
         if (isTwirpError(error)) {
-          isNotFound(error);
-          isValidationError(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -206,8 +206,8 @@ export const resolvers: IResolvers = {
         return resp0.orders;
       } catch (error) {
         if (isTwirpError(error)) {
-          isNotFound(error);
-          isValidationError(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

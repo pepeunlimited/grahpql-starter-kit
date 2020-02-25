@@ -2,12 +2,12 @@ import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
 import { ApolloError, AuthenticationError } from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isValidationError } from "../error/validation";
+import { throwsValidationError } from "../error/validation";
 import {AccountService, Account} from "../rpc/account";
 import {User, UserService} from "../rpc/user";
-import {isNotFound} from "../error/not_found";
-import {isPermissionDenied} from "../error/permission_denied";
-import {isAborted} from "../error/aaborted";
+import {throwsNotFound} from "../error/not_found";
+import {throwsPermissionDenied} from "../error/permission_denied";
+import {throwsAborted} from "../error/aaborted";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -37,9 +37,9 @@ export const resolvers: IResolvers = {
                 return account
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isAborted(error);
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsAborted(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -56,9 +56,9 @@ export const resolvers: IResolvers = {
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isPermissionDenied(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsPermissionDenied(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

@@ -1,10 +1,10 @@
 import {Context, isTwirpError} from "ts-rpc-client";
-import {isAccessRefreshError} from "./error/authorization";
-import {isValidationError} from "./error/validation";
+import {throwsAccessRefreshError} from "./error/authorization";
+import {throwsValidationError} from "./error/validation";
 import {ApolloError} from "apollo-server";
 import {AuthenticationServiceClientImpl} from "./rpc/authentication";
-import {isNotFound} from "./error/not_found";
-import {isPermissionDenied} from "./error/permission_denied";
+import {throwsNotFound} from "./error/not_found";
+import {throwsPermissionDenied} from "./error/permission_denied";
 
 const defaultPort = 4000;
 
@@ -34,10 +34,10 @@ export async function getUserID(authorization: string, authentication: Authentic
     return verified.userId;
   } catch (error) {
     if (isTwirpError(error)) {
-      isAccessRefreshError(error);
-      isNotFound(error);
-      isPermissionDenied(error);
-      isValidationError(error);
+      throwsAccessRefreshError(error);
+      throwsNotFound(error);
+      throwsPermissionDenied(error);
+      throwsValidationError(error);
     }
     console.log(error); // unknown error
     throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

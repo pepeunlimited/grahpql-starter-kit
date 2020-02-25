@@ -10,6 +10,11 @@ import {CheckoutServiceClientImpl} from "./rpc/checkout";
 import {FilesServiceClientImpl} from "./rpc/files";
 import {OrderServiceClientImpl} from "./rpc/order";
 import {PaymentServiceClientImpl} from "./rpc/payment";
+import {PriceServiceClientImpl} from "./rpc/price";
+import {ProductServiceClientImpl} from "./rpc/product";
+import {PlanServiceClientImpl} from "./rpc/plan";
+import {SubscriptionServiceClientImpl} from "./rpc/subscription";
+import {ThirdPartyPriceServiceClientImpl} from "./rpc/third_party_price";
 
 const server = new ApolloServer({
   schema,
@@ -30,10 +35,15 @@ const server = new ApolloServer({
     const checkout        = new CheckoutServiceClientImpl<Context>(rpc);
     const order           = new OrderServiceClientImpl<Context>(rpc);
     const payment         = new PaymentServiceClientImpl<Context>(rpc);
+    const price           = new PriceServiceClientImpl<Context>(rpc);
+    const product         = new ProductServiceClientImpl<Context>(rpc);
+    const plan            = new PlanServiceClientImpl<Context>(rpc);
+    const subscription    = new SubscriptionServiceClientImpl<Context>(rpc);
+    const thirdpartyprice = new ThirdPartyPriceServiceClientImpl<Context>(rpc);
 
     ctx.userId = await getUserID(authorization, authentication, ctx);
 
-    return {models: {user, authentication, files, credentials, accounts, checkout, order, payment}, ctx: ctx};
+    return {models: {user, authentication, files, credentials, accounts, checkout, order, payment, price, product, plan, subscription, thirdpartyprice}, ctx: ctx};
   },
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground

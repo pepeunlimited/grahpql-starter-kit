@@ -2,12 +2,12 @@ import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
 import {ApolloError, AuthenticationError, UserInputError} from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isValidationError } from "../error/validation";
-import {isNotFound} from "../error/not_found";
+import { throwsValidationError } from "../error/validation";
+import {throwsNotFound} from "../error/not_found";
 import {PaymentInstrument, PaymentService} from "../rpc/payment";
 import {User, UserService} from "../rpc/user";
 import {Order, OrderService} from "../rpc/order";
-import {isPermissionDenied} from "../error/permission_denied";
+import {throwsPermissionDenied} from "../error/permission_denied";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
@@ -46,9 +46,9 @@ export const resolvers: IResolvers = {
                 return pi;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isPermissionDenied(error);
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsPermissionDenied(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -67,8 +67,8 @@ export const resolvers: IResolvers = {
                 return order;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -83,8 +83,8 @@ export const resolvers: IResolvers = {
                 return instrument;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -99,9 +99,9 @@ export const resolvers: IResolvers = {
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isPermissionDenied(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsPermissionDenied(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

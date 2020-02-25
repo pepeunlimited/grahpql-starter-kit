@@ -2,11 +2,11 @@ import { ITypedef, IResolvers, ApolloError } from "apollo-server";
 import { AuthPayload } from "../authentication/authpayload";
 import { isTwirpError, Context } from "ts-rpc-client";
 import { UserService, User } from "../rpc/user";
-import { isAccessRefreshError } from "../error/authorization";
-import { isValidationError } from "../error/validation";
+import { throwsAccessRefreshError } from "../error/authorization";
+import { throwsValidationError } from "../error/validation";
 import { AuthenticationService } from "../rpc/authentication";
-import {isPermissionDenied} from "../error/permission_denied";
-import {isNotFound} from "../error/not_found";
+import {throwsPermissionDenied} from "../error/permission_denied";
+import {throwsNotFound} from "../error/not_found";
 
 export const typeDef: ITypedef = `
   extend type Mutation {
@@ -31,9 +31,9 @@ export const resolvers: IResolvers = {
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
-          isPermissionDenied(error);
-          isNotFound(error);
-          isValidationError(error);
+          throwsPermissionDenied(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -47,10 +47,10 @@ export const resolvers: IResolvers = {
         return { refreshToken: auth.refreshToken, accessToken: auth.accessToken};
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccessRefreshError((error));
-          isPermissionDenied(error);
-          isNotFound(error);
-          isValidationError(error);
+          throwsAccessRefreshError((error));
+          throwsPermissionDenied(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -70,10 +70,10 @@ export const resolvers: IResolvers = {
         return user
       } catch (error) {
         if (isTwirpError(error)) {
-          isAccessRefreshError(error);
-          isPermissionDenied(error);
-          isNotFound(error);
-          isValidationError(error);
+          throwsAccessRefreshError(error);
+          throwsPermissionDenied(error);
+          throwsNotFound(error);
+          throwsValidationError(error);
         }
         console.log(error); // unknown error
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");

@@ -2,7 +2,7 @@ import { TwirpError } from "ts-rpc-client";
 
 import { AuthenticationError } from "apollo-server";
 
-export function isAccessRefreshError(error: TwirpError) {
+export function throwsAccessRefreshError(error: TwirpError) {
   if (error.msg == 'access_token_malformed'  ||
       error.msg == 'refresh_token_malformed' ||
       error.msg == 'refresh_token_expired'   ||

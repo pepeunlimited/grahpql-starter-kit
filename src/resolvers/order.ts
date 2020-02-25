@@ -2,15 +2,18 @@ import { IResolvers, ITypedef } from "graphql-tools";
 import { isTwirpError } from 'ts-rpc-client';
 import { ApolloError } from "apollo-server";
 import { Context } from "ts-rpc-client";
-import { isValidationError } from "../error/validation";
-import {isNotFound} from "../error/not_found";
+import { throwsValidationError } from "../error/validation";
+import {throwsNotFound, isFotFound} from "../error/not_found";
 import {OrderItem, OrderService, OrderTx} from "../rpc/order";
 import {User, UserService} from "../rpc/user";
-import {isPermissionDenied} from "../error/permission_denied";
+import {throwsPermissionDenied} from "../error/permission_denied";
+import {Price, PriceService} from "../rpc/price";
 
 // https://blog.apollographql.com/modularizing-your-graphql-schema-code-d7f71d5ed5f2
 
 export const typeDef: ITypedef = `
+  union OrderItemPrice = Price | Plan
+  
   type Order {
     id: ID
     createdAt: String!
@@ -21,6 +24,7 @@ export const typeDef: ITypedef = `
   type OrderItem {
     id: ID
     quantity: Int!
+    price: Price
   }
   type OrderTx {
     id: ID
@@ -42,8 +46,8 @@ export const resolvers: IResolvers = {
                 return items.orderItems;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -59,8 +63,8 @@ export const resolvers: IResolvers = {
                 return txs.orderTxs;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
@@ -75,9 +79,30 @@ export const resolvers: IResolvers = {
                 return user;
             } catch (error) {
                 if (isTwirpError(error)) {
-                    isNotFound(error);
-                    isPermissionDenied(error);
-                    isValidationError(error);
+                    throwsNotFound(error);
+                    throwsPermissionDenied(error);
+                    throwsValidationError(error);
+                }
+                console.log(error); // unknown error
+                throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
+            }
+        },
+    },
+    OrderItem: {
+        price: async (parent, _,context): Promise<Price|null> => {
+            const ctx              = context.ctx as Context;
+            const priceService     = context.models.price as PriceService<Context>;
+            const priceId          = parent.priceId as number;
+            try {
+                const price = await priceService.GetPrice(ctx, {productSku: "", priceId: priceId, productId:0 });
+                return price;
+            } catch (error) {
+                if (isFotFound(error)) {
+                    return null;
+                }
+                if (isTwirpError(error)) {
+                    throwsPermissionDenied(error);
+                    throwsValidationError(error);
                 }
                 console.log(error); // unknown error
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
