@@ -20,6 +20,7 @@ export const typeDef: ITypedef = `
     sku: String!
     price: Price!
   }
+  
 `;
 
 export const resolvers: IResolvers = {

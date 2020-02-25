@@ -31,7 +31,7 @@ const server = new ApolloServer({
     const user            = new UserServiceClientImpl<Context>(rpc);
     const files           = new FilesServiceClientImpl<Context>(rpc);
     const credentials     = new CredentialsServiceClientImpl<Context>(rpc);
-    const accounts        = new AccountServiceClientImpl<Context>(rpc);
+    const account         = new AccountServiceClientImpl<Context>(rpc);
     const checkout        = new CheckoutServiceClientImpl<Context>(rpc);
     const order           = new OrderServiceClientImpl<Context>(rpc);
     const payment         = new PaymentServiceClientImpl<Context>(rpc);
@@ -43,8 +43,9 @@ const server = new ApolloServer({
 
     ctx.userId = await getUserID(authorization, authentication, ctx);
 
-    return {service: {user, authentication, files, credentials, accounts, checkout, order, payment, price, product, plan, subscription, thirdpartyprice}, ctx: ctx};
+    return {service: {user, authentication, files, credentials, account, checkout, order, payment, price, product, plan, subscription, thirdpartyprice}, ctx: ctx};
   },
+  tracing: true,
   introspection: environment.apollo.introspection,
   playground:  environment.apollo.playground
 });

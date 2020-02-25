@@ -53,7 +53,7 @@ export const resolvers: IResolvers = {
                     throwsNotFound(error);
                     throwsValidationError(error);
                 }
-                console.log(error); // unknown error
+                console.log(error);
                 throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
             }
         }
