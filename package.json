@@ -11,10 +11,10 @@
   "devDependencies": {
     "@types/lodash": "^4.14.149",
     "dotenv": "^8.2.0",
-    "typescript": "3.7.5"
+    "typescript": "3.8.2"
   },
   "dependencies": {
-    "apollo-server": "2.10.0",
+    "apollo-server": "2.10.1",
     "graphql": "14.6.0",
     "ts-proto": "1.8.0",
     "ts-rpc-client": "0.4.1"

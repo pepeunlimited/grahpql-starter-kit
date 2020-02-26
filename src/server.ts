@@ -16,6 +16,7 @@ import {PlanServiceClientImpl} from "./rpc/plan";
 import {SubscriptionServiceClientImpl} from "./rpc/subscription";
 import {ThirdPartyPriceServiceClientImpl} from "./rpc/third_party_price";
 
+
 const server = new ApolloServer({
   schema,
   context: async ({req}) => {
