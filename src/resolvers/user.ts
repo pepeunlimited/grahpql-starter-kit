@@ -197,6 +197,5 @@ export const resolvers: IResolvers = {
         throw new ApolloError(error.msg, "INTERNAL_SERVER_ERROR");
       }
     },
-
   }
 };

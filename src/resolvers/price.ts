@@ -40,12 +40,10 @@ export const resolvers: IResolvers = {
     },
     Mutation: {},
     Price: {
-        product: async (parent, args, context): Promise<Product> => {
-            const ctx             = context.ctx as Context;
-            const productService  = context.service.product as ProductService<Context>;
-            const productId         = parent.productId as number;
+        product: async (parent: Price, args, context: { ctx: Context, service: { product: ProductService<Context> }}): Promise<Product> => {
+            const productId = parent.productId;
             try {
-                const product = await productService.GetProduct(ctx, { productId: productId, sku: "" });
+                const product = await context.service.product.GetProduct(ctx, { productId: productId, sku: "" });
                 return product;
             } catch (error) {
                 if (isTwirpError(error)) {
