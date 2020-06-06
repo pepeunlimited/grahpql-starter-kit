@@ -14,7 +14,7 @@
     "typescript": "3.8.2"
   },
   "dependencies": {
-    "apollo-server": "2.10.1",
+    "apollo-server": "2.14.2",
     "graphql": "14.6.0",
     "ts-proto": "1.8.0",
     "ts-rpc-client": "0.4.1"
